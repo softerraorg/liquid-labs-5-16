@@ -140,25 +140,33 @@
       return subscribeRadio && subscribeRadio.checked;
     }
 
-    function getBaseTotal() {
+    // Picks a single bundle variant (Single/Duo/Trio) for the current tile.
+    // For mixed flavors, prefers an available variant; falls back to any matching variant.
+    function findBundleVariant() {
       const bundleValue = getSelectedBundleValue();
+      const flavors = getSelectedFlavors();
+      if (!flavors.length) return null;
+      let firstFound = null;
+      for (const f of flavors) {
+        const v = findVariant(f, bundleValue);
+        if (v) {
+          if (v.available) return v;
+          if (!firstFound) firstFound = v;
+        }
+      }
+      return firstFound;
+    }
+
+    function getBaseTotal() {
       const flavors = getSelectedFlavors();
       if (flavors.length === 0) {
         const t = getSelectedTile();
         return t ? parseInt(t.dataset.bagPrice, 10) || 0 : 0;
       }
-      if (!isMixed()) {
-        const v = findVariant(flavors[0], bundleValue);
-        if (v) return v.price;
-        const t = getSelectedTile();
-        return t ? parseInt(t.dataset.bagPrice, 10) || 0 : 0;
-      }
-      let total = 0;
-      flavors.forEach((f) => {
-        const v = findVariant(f, singleBundleValue);
-        if (v) total += v.price;
-      });
-      return total;
+      const v = findBundleVariant();
+      if (v) return v.price;
+      const t = getSelectedTile();
+      return t ? parseInt(t.dataset.bagPrice, 10) || 0 : 0;
     }
 
     function updateBagVisibility() {
@@ -181,22 +189,13 @@
       updateSubmitState();
     }
 
-    // Checks the exact variant(s) the current selection would add to cart and
-    // confirms each one exists and is in stock. Mirrors collectItems() logic.
+    // Checks the bundle variant the current selection would add to cart.
     function validateSelection() {
       const flavors = getSelectedFlavors();
       if (flavors.length === 0) return { ok: false, reason: 'select' };
-      if (!isMixed()) {
-        const v = findVariant(flavors[0], getSelectedBundleValue());
-        if (!v) return { ok: false, reason: 'unavailable' };
-        if (!v.available) return { ok: false, reason: 'soldout' };
-        return { ok: true };
-      }
-      for (const flavor of flavors) {
-        const v = findVariant(flavor, singleBundleValue);
-        if (!v) return { ok: false, reason: 'unavailable' };
-        if (!v.available) return { ok: false, reason: 'soldout' };
-      }
+      const v = findBundleVariant();
+      if (!v) return { ok: false, reason: 'unavailable' };
+      if (!v.available) return { ok: false, reason: 'soldout' };
       return { ok: true };
     }
 
@@ -310,33 +309,27 @@
 
     function collectItems() {
       const items = [];
-      const bundleValue = getSelectedBundleValue();
       const flavors = getSelectedFlavors();
       if (flavors.length === 0) return items;
 
-      const sellingPlanId = isSubscribe() && sellingPlanInput && sellingPlanInput.value ? sellingPlanInput.value : null;
+      const v = findBundleVariant();
+      if (!v) return items;
 
-      if (!isMixed()) {
-        const v = findVariant(flavors[0], bundleValue);
-        if (!v) return items;
-        const item = { id: v.id, quantity: 1 };
-        if (sellingPlanId) item.selling_plan = sellingPlanId;
-        items.push(item);
-        return items;
+      const sellingPlanId = isSubscribe() && sellingPlanInput && sellingPlanInput.value ? sellingPlanInput.value : null;
+      const item = { id: v.id, quantity: 1 };
+
+      // For mixed flavors, attach per-bag breakdown so fulfillment knows
+      // which flavor goes in each bag (cart line variant is just the base SKU).
+      if (isMixed()) {
+        const properties = {};
+        flavors.forEach((flavor, i) => {
+          properties['Bag ' + (i + 1)] = flavor;
+        });
+        item.properties = properties;
       }
 
-      flavors.forEach((flavor, i) => {
-        const v = findVariant(flavor, singleBundleValue);
-        if (!v) return;
-        const item = {
-          id: v.id,
-          quantity: 1,
-          properties: { ['Bag ' + (i + 1)]: flavor, _bundle: bundleValue },
-        };
-        if (sellingPlanId) item.selling_plan = sellingPlanId;
-        items.push(item);
-      });
-
+      if (sellingPlanId) item.selling_plan = sellingPlanId;
+      items.push(item);
       return items;
     }
 
