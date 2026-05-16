@@ -1,0 +1,1025 @@
+{% comment %} {% schema %}
+{
+  "name": "Custom Video Section",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "Behind the scenes" },
+    { "type": "header", "content": "Section Padding" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Padding Top (Desktop)", "default": 36 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Padding Bottom (Desktop)", "default": 36 },
+    { "type": "range", "id": "padding_top_mobile", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Padding Top (Mobile)", "default": 20 },
+    { "type": "range", "id": "padding_bottom_mobile", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Padding Bottom (Mobile)", "default": 20 },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "grid", "label": "Grid" },
+        { "value": "slider", "label": "Slider" }
+      ],
+      "default": "grid"
+    },
+    { "type": "range", "id": "video_width", "min": 200, "max": 600, "step": 10, "unit": "px", "label": "Video Width (Grid)", "default": 360 },
+    { "type": "color", "id": "background_color", "label": "Background Color" },
+    { "type": "header", "content": "Slider Settings" },
+    { "type": "range", "id": "slides_to_show", "min": 1, "max": 5, "step": 1, "label": "Slides to Show", "default": 3 },
+    { "type": "range", "id": "slides_to_show_mobile", "min": 1, "max": 3, "step": 1, "label": "Slides to Show (Mobile)", "default": 2 },
+    { "type": "checkbox", "id": "show_arrows", "label": "Show Navigation Arrows", "default": true },
+    { "type": "checkbox", "id": "show_dots", "label": "Show Navigation Dots", "default": true },
+    { "type": "checkbox", "id": "autoplay", "label": "Autoplay Slider", "default": false },
+    { "type": "range", "id": "autoplay_speed", "min": 2000, "max": 8000, "step": 500, "unit": "ms", "label": "Autoplay Speed", "default": 3000 }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video",
+      "limit": 10,
+      "settings": [
+        { "type": "video", "id": "video", "label": "Video" },
+        { "type": "image_picker", "id": "cover_image", "label": "Cover Image" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Video Section",
+      "blocks": [{ "type": "video" }, { "type": "video" }, { "type": "video" }]
+    }
+  ]
+}
+{% endschema %}
+
+{{- 'splide-core.css' | asset_url | stylesheet_tag -}}
+
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide-core.min.css"
+  media="print"
+  onload="this.media='all'"
+>
+
+<style>
+  #ll-section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  @media screen and (max-width: 749px) {
+    #ll-section-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    }
+  }
+
+  .ll-section {
+    padding: 0;
+    text-align: center;
+    background: radial-gradient(circle at center, #302d3a, #191720), url(/cdn/shop/files/bg.webp?v=1773264135);
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: soft-light;
+  }
+
+  .ll-title {
+    font-size: 40px;
+    margin: 0 0 40px;
+    color: #fff;
+  }
+
+  /* ── Grid layout ── */
+  .ll-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ── Slider layout ── */
+  .ll-slider-outer {
+    position: relative;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  /* Splide overrides */
+  #ll-section-{{ section.id }} .splide__track {
+    overflow: hidden;
+  }
+
+  #ll-section-{{ section.id }} .splide__list {
+    display: flex;
+    align-items: stretch;
+  }
+
+  #ll-section-{{ section.id }} .splide__slide {
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  #ll-section-{{ section.id }} .splide__arrow {
+    display: none !important;
+  }
+
+  /* Dots */
+  #ll-section-{{ section.id }} .splide__pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    list-style: none;
+    padding: 0;
+    position: relative;
+    bottom: unset;
+  }
+
+  #ll-section-{{ section.id }} .splide__pagination__page {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    opacity: 1;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  #ll-section-{{ section.id }} .splide__pagination__page.is-active {
+    background: #fff;
+    transform: scale(1.3);
+  }
+
+  /* ── Shared item styles ── */
+  .ll-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .ll-video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 177.78%;
+  }
+
+  .ll-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+
+  .ll-cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 2;
+    transition: opacity 0.4s;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .ll-item.playing .ll-cover {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ── Arrows ── */
+  .ll-arrows-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    column-gap: 30px;
+    margin-top: 40px;
+  }
+
+  .ll-arrow {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.6);
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    user-select: none;
+  }
+
+  .ll-arrow:hover {
+    background: #fff;
+  }
+
+  .ll-arrow svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: #5D5D5D;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: block;
+  }
+
+  /* Slider viewport hidden until Splide ready */
+  .ll-slider-outer .splide:not(.is-initialized) .splide__list {
+    visibility: hidden;
+  }
+</style>
+
+<div class="ll-section" id="ll-section-{{ section.id }}">
+  <div class="page-width">
+    <h2 class="ll-title">{{ section.settings.title }}</h2>
+
+    {% if section.settings.layout == 'grid' %}
+
+      <div class="ll-grid">
+        {% for block in section.blocks %}
+          <div class="ll-item" style="width:{{ section.settings.video_width }}px;" {{ block.shopify_attributes }}>
+            <div class="ll-video-wrapper">
+              {% if block.settings.video %}
+                {{ block.settings.video | video_tag: autoplay: true, muted: true, loop: true, playsinline: true, class: 'll-video' }}
+              {% endif %}
+              {% if block.settings.cover_image %}
+                <img class="ll-cover" src="{{ block.settings.cover_image | image_url: width: 800 }}" loading="lazy" alt="">
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+    {% else %}
+
+      <div class="ll-slider-outer">
+
+        <div
+          class="splide ll-splide"
+          id="ll-splide-{{ section.id }}"
+        >
+          <div class="splide__track">
+            <ul class="splide__list">
+              {% for block in section.blocks %}
+                <li class="splide__slide ll-item" {{ block.shopify_attributes }}>
+                  <div class="ll-video-wrapper">
+                    {% if block.settings.video %}
+                      {{ block.settings.video | video_tag: autoplay: true, muted: true, loop: true, playsinline: true, class: 'll-video' }}
+                    {% endif %}
+                    {% if block.settings.cover_image %}
+                      <img class="ll-cover" src="{{ block.settings.cover_image | image_url: width: 800 }}" loading="lazy" alt="">
+                    {% endif %}
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        {% if section.settings.show_arrows %}
+          <div class="ll-arrows-wrapper">
+            <button type="button" class="ll-arrow ll-arrow-prev" id="ll-prev-{{ section.id }}" aria-label="Previous">
+              <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M23.848 13.1275H2.41211M2.41211 13.1275L13.1284 23.8438M2.41211 13.1275L13.1284 2.41113" stroke="#5D5D5D" stroke-width="4.82283" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button type="button" class="ll-arrow ll-arrow-next" id="ll-next-{{ section.id }}" aria-label="Next">
+              <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.41211 13.1275H23.848M23.848 13.1275L13.1317 23.8438M23.848 13.1275L13.1317 2.41113" stroke="#5D5D5D" stroke-width="4.82283" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        {% endif %}
+
+      </div>
+
+    {% endif %}
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js" defer></script>
+
+<script>
+(function () {
+
+  function initSlider() {
+
+    var section  = document.getElementById('ll-section-{{ section.id }}');
+    if (!section) return;
+
+    var splideEl = document.getElementById('ll-splide-{{ section.id }}');
+    if (!splideEl) return;
+
+    if (splideEl.dataset.llInit) return;
+    splideEl.dataset.llInit = '1';
+
+    if (typeof Splide === 'undefined') {
+      setTimeout(initSlider, 100);
+      return;
+    }
+
+    var desktopShow   = {{ section.settings.slides_to_show | json }};
+    var mobileShow    = {{ section.settings.slides_to_show_mobile | json }};
+    var showDots      = {{ section.settings.show_dots | json }};
+    var doAutoplay    = {{ section.settings.autoplay | json }};
+    var autoplaySpeed = {{ section.settings.autoplay_speed | json }};
+
+    var opts = {
+      type        : 'loop',
+      perPage     : desktopShow,
+      perMove     : 1,
+      gap         : '20px',
+      arrows      : false,
+      pagination  : showDots,
+      speed       : 500,
+      easing      : 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+      breakpoints : {
+        749: {
+          perPage : mobileShow,
+          gap     : '12px'
+        }
+      }
+    };
+
+    if (doAutoplay) {
+      opts.autoplay    = true;
+      opts.interval    = autoplaySpeed;
+      opts.pauseOnHover = true;
+    }
+
+    var splide = new Splide('#ll-splide-{{ section.id }}', opts);
+    splide.mount();
+
+    // Wire existing arrow buttons — iOS-safe touchend
+    var prevBtn = section.querySelector('#ll-prev-{{ section.id }}');
+    var nextBtn = section.querySelector('#ll-next-{{ section.id }}');
+
+    function bindBtn(btn, dir) {
+      if (!btn) return;
+      var tapped = false;
+
+      btn.addEventListener('touchstart', function () {
+        tapped = false;
+      }, { passive: true });
+
+      btn.addEventListener('touchend', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        tapped = true;
+        splide.go(dir);
+      }, { passive: false });
+
+      btn.addEventListener('click', function () {
+        if (tapped) { tapped = false; return; }
+        splide.go(dir);
+      });
+    }
+
+    bindBtn(prevBtn, '<');
+    bindBtn(nextBtn, '>');
+
+    // Bind video cover play after Splide clones slides
+    splide.on('mounted', function () {
+      bindVideos(section);
+    });
+  }
+
+  function bindVideos(section) {
+    section.querySelectorAll('.ll-item').forEach(function (item) {
+      var video = item.querySelector('video');
+      var cover = item.querySelector('.ll-cover');
+      if (!video || !cover) return;
+      // Avoid double-binding on clones
+      if (cover.dataset.llBound) return;
+      cover.dataset.llBound = '1';
+      video.addEventListener('play',  function () { item.classList.add('playing'); });
+      video.addEventListener('pause', function () { item.classList.remove('playing'); });
+      cover.addEventListener('click', function () { video.play(); });
+    });
+  }
+
+  function init() {
+    if (typeof Splide === 'undefined') {
+      var s = document.querySelector('script[src*="splide"]');
+      if (s) {
+        s.addEventListener('load', initSlider);
+      } else {
+        setTimeout(initSlider, 300);
+      }
+    } else {
+      initSlider();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  document.addEventListener('shopify:section:load', function () {
+    var el = document.getElementById('ll-splide-{{ section.id }}');
+    if (el) delete el.dataset.llInit;
+    init();
+  });
+
+})();
+</script> {% endcomment %}
+
+
+{% schema %}
+{
+  "name": "Custom Video Section",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "text",  "id": "title",  "label": "Title",  "default": "Behind the scenes" },
+    { "type": "header", "content": "Section Padding" },
+    { "type": "range", "id": "padding_top",           "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Padding Top (Desktop)",  "default": 36 },
+    { "type": "range", "id": "padding_bottom",         "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Padding Bottom (Desktop)","default": 36 },
+    { "type": "range", "id": "padding_top_mobile",     "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Padding Top (Mobile)",    "default": 20 },
+    { "type": "range", "id": "padding_bottom_mobile",  "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Padding Bottom (Mobile)", "default": 20 },
+    {
+      "type": "select", "id": "layout", "label": "Layout",
+      "options": [{ "value": "grid", "label": "Grid" }, { "value": "slider", "label": "Slider" }],
+      "default": "grid"
+    },
+    { "type": "range",    "id": "video_width",           "min": 200, "max": 600, "step": 10, "unit": "px", "label": "Video Width (Grid)", "default": 360 },
+    { "type": "color",    "id": "background_color",      "label": "Background Color" },
+    { "type": "header",   "content": "Slider Settings" },
+    { "type": "range",    "id": "slides_to_show",        "min": 1, "max": 5, "step": 1, "label": "Slides to Show",          "default": 3 },
+    { "type": "range",    "id": "slides_to_show_mobile", "min": 1, "max": 3, "step": 1, "label": "Slides to Show (Mobile)", "default": 2 },
+    { "type": "checkbox", "id": "show_arrows",   "label": "Show Navigation Arrows", "default": true  },
+    { "type": "checkbox", "id": "show_dots",     "label": "Show Navigation Dots",   "default": true  },
+    { "type": "checkbox", "id": "autoplay",      "label": "Autoplay Slider",        "default": false },
+    { "type": "range",    "id": "autoplay_speed","min": 2000, "max": 8000, "step": 500, "unit": "ms", "label": "Autoplay Speed", "default": 3000 }
+  ],
+  "blocks": [{
+    "type": "video", "name": "Video", "limit": 10,
+    "settings": [
+      { "type": "video",        "id": "video",       "label": "Video"       },
+      { "type": "image_picker", "id": "cover_image", "label": "Cover Image" }
+    ]
+  }],
+  "presets": [{ "name": "Custom Video Section", "blocks": [{ "type": "video" }, { "type": "video" }, { "type": "video" }] }]
+}
+{% endschema %}
+
+{% for block in section.blocks %}
+  {% if block.settings.cover_image %}
+    <link rel="preload" as="image" href="{{ block.settings.cover_image | image_url: width: 1200 }}" fetchpriority="high">
+  {% endif %}
+{% endfor %}
+
+<style>
+  #vs-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    text-align: center;
+    {% comment %} background: radial-gradient(circle at center, #302d3a, #191720),
+                url(/cdn/shop/files/bg.webp?v=1773264135);
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: soft-light; {% endcomment %}
+  }
+  @media (max-width: 749px) {
+    #vs-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    }
+  }
+
+  #vs-{{ section.id }} .vs-title {
+    font-size: 40px;
+    margin: 0 0 40px;
+    color: #fff;
+    font-weight:500;
+  }
+
+  /* ── Grid ── */
+  #vs-{{ section.id }} .vs-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ── Scroll-snap slider ── */
+  #vs-{{ section.id }} .vs-outer {
+    max-width: 1300px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  #vs-{{ section.id }} .vs-track {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    scroll-snap-stop: always;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: none;
+    scrollbar-width: none;
+  }
+  #vs-{{ section.id }} .vs-track::-webkit-scrollbar { display: none; }
+
+  /* CSS sets initial slide widths so the layout is correct before JS runs.
+     JS will override with precise inline px values after layout. */
+  #vs-{{ section.id }} .vs-slide {
+    flex: 0 0 calc(100% / {{ section.settings.slides_to_show }});
+    width: calc(100% / {{ section.settings.slides_to_show }});
+    scroll-snap-align: start;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+  @media (max-width: 749px) {
+    #vs-{{ section.id }} .vs-slide {
+      flex: 0 0 calc(100% / {{ section.settings.slides_to_show_mobile }});
+      width: calc(100% / {{ section.settings.slides_to_show_mobile }});
+      padding: 0 6px;
+    }
+        #vs-{{ section.id }} .vs-title {
+    font-size: 28px;
+    margin: 0 0 15px;
+    text-align:left;
+ }
+  }
+
+  /* ── Shared item ── */
+  #vs-{{ section.id }} .vs-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  #vs-{{ section.id }} .vs-video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 177.78%;
+  }
+  #vs-{{ section.id }} .vs-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+  #vs-{{ section.id }} .vs-cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 2;
+    transition: opacity 0.4s;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  #vs-{{ section.id }} .vs-item.playing .vs-cover {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ── Hide iOS Safari native video controls overlay ──
+     These rules prevent the play button that appears on paused/unstarted videos.
+     We target the video element directly using the class name for maximum specificity. */
+  .vs-video::-webkit-media-controls,
+  .vs-video::-webkit-media-controls-panel,
+  .vs-video::-webkit-media-controls-play-button,
+  .vs-video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    opacity: 0 !important;
+    -webkit-appearance: none !important;
+  }
+
+  /* ── Arrows ── */
+  #vs-{{ section.id }} .vs-arrows {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
+  }
+  #vs-{{ section.id }} .vs-arrow {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.6);
+    background: #fff;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+    transition: background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    user-select: none;
+  }
+  #vs-{{ section.id }} .vs-arrow:hover { background: #f0f0f0; }
+  #vs-{{ section.id }} .vs-arrow svg {
+    width: 20px; height: 20px;
+    fill: none; stroke: #5D5D5D;
+    stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+    display: block;
+  }
+
+  /* ── Dots ── */
+  #vs-{{ section.id }} .vs-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 0;
+  }
+  #vs-{{ section.id }} .vs-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    border: none; padding: 0;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  #vs-{{ section.id }} .vs-dot.is-active {
+    background: #fff;
+    transform: scale(1.3);
+  }
+</style>
+
+<div id="vs-{{ section.id }}">
+  <div class="page-width">
+    <h2 class="vs-title">{{ section.settings.title }}</h2>
+
+    {% if section.settings.layout == 'grid' %}
+
+      <div class="vs-grid">
+        {% for block in section.blocks %}
+          <div class="vs-item" style="width:{{ section.settings.video_width }}px;" {{ block.shopify_attributes }}>
+            <div class="vs-video-wrapper">
+              {% if block.settings.video %}
+                <video
+                  autoplay muted loop playsinline webkit-playsinline
+                  class="vs-video"
+                  {% if block.settings.video.preview_image %}poster="{{ block.settings.video.preview_image | image_url: width: 1200 }}"{% endif %}
+                >
+                  {% for source in block.settings.video.sources %}
+                    <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                  {% endfor %}
+                </video>
+              {% endif %}
+              {% if block.settings.cover_image %}
+                <img class="vs-cover" src="{{ block.settings.cover_image | image_url: width: 1200 }}" loading="eager" fetchpriority="high" decoding="sync" alt="">
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+    {% else %}
+
+      <div class="vs-outer" id="vs-outer-{{ section.id }}">
+        <div class="vs-track" id="vs-track-{{ section.id }}">
+          {% for block in section.blocks %}
+            <div class="vs-slide" {{ block.shopify_attributes }}>
+              <div class="vs-item">
+                <div class="vs-video-wrapper">
+                  {% if block.settings.video %}
+                    {%- comment -%}
+                      Manual <video> element gives us full control over every attribute.
+                      autoplay + muted + playsinline is the required combination for iOS Safari.
+                      webkit-playsinline covers iOS 9 and earlier.
+                      Real slides are the FIRST content the browser sees (scroll starts at 0),
+                      so iOS processes the autoplay attribute on genuinely visible videos.
+                    {%- endcomment -%}
+                    <video
+                      autoplay muted loop playsinline webkit-playsinline
+                      class="vs-video"
+                      {% if block.settings.video.preview_image %}poster="{{ block.settings.video.preview_image | image_url: width: 1200 }}"{% endif %}
+                    >
+                      {% for source in block.settings.video.sources %}
+                        <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                      {% endfor %}
+                    </video>
+                  {% endif %}
+                  {% if block.settings.cover_image %}
+                    <img class="vs-cover" src="{{ block.settings.cover_image | image_url: width: 1200 }}" loading="eager" fetchpriority="high" decoding="sync" alt="">
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if section.settings.show_arrows %}
+        <div class="vs-arrows">
+          <button type="button" class="vs-arrow" id="vs-prev-{{ section.id }}" aria-label="Previous">
+            <svg viewBox="0 0 27 27"><path d="M23.848 13.128H2.412M2.412 13.128l10.716 10.716M2.412 13.128l10.716-10.717" stroke-width="4.82" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="vs-arrow" id="vs-next-{{ section.id }}" aria-label="Next">
+            <svg viewBox="0 0 27 27"><path d="M2.412 13.128H23.848M23.848 13.128L13.132 23.844M23.848 13.128L13.132 2.411" stroke-width="4.82" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      {% endif %}
+
+      {% if section.settings.show_dots %}
+        <div class="vs-dots" id="vs-dots-{{ section.id }}"></div>
+      {% endif %}
+
+    {% endif %}
+  </div>
+</div>
+
+<script>
+(function () {
+  var SID = '{{ section.id }}';
+
+  /* ─────────────────────────────────────────────────────────────────────
+     SLIDER
+     Key design principle for iOS autoplay:
+       Real slides are at scroll positions 0, sw, 2*sw, …
+       The browser renders them FIRST at scroll=0, so iOS processes the
+       autoplay attribute on visible real videos before any data loads.
+       We only APPEND clone slides at the END (no prepend), so the initial
+       scroll position is 0 and real slides are always what iOS first sees.
+     ───────────────────────────────────────────────────────────────────── */
+  function run(sectionEl) {
+    var outerEl  = sectionEl.querySelector('#vs-outer-' + SID);
+    var trackEl  = sectionEl.querySelector('#vs-track-' + SID);
+    if (!outerEl || !trackEl) {
+      bindAllVideos(sectionEl);
+      return;
+    }
+
+    var dotsWrap    = sectionEl.querySelector('#vs-dots-'  + SID);
+    var prevBtn     = sectionEl.querySelector('#vs-prev-'  + SID);
+    var nextBtn     = sectionEl.querySelector('#vs-next-'  + SID);
+    var desktopPer  = {{ section.settings.slides_to_show | json }};
+    var mobilePer   = {{ section.settings.slides_to_show_mobile | json }};
+    var doAutoplay  = {{ section.settings.autoplay | json }};
+    var autoInterval= {{ section.settings.autoplay_speed | json }};
+
+    var realSlides  = Array.prototype.slice.call(trackEl.children);
+    var total       = realSlides.length;
+    var clonesAdded = 0;
+    var isJumping   = false;
+    var autoTimer   = null;
+
+    function pp() { return window.innerWidth <= 749 ? mobilePer : desktopPer; }
+    function sw() { return outerEl.offsetWidth / pp(); }
+
+    /* ── Build ONLY appended clones (copies of first N real slides) ──
+       No clones are prepended, so scroll starts at 0 showing real slides.
+       This is what allows iOS to process the HTML autoplay attribute on
+       genuinely visible videos immediately at page load. */
+    function buildClones() {
+      Array.prototype.slice.call(trackEl.querySelectorAll('[data-vs-clone]'))
+        .forEach(function (c) { trackEl.removeChild(c); });
+
+      clonesAdded = Math.min(pp(), total);
+
+      for (var j = 0; j < clonesAdded; j++) {
+        var c = realSlides[j].cloneNode(true);
+        c.setAttribute('data-vs-clone', '1');
+        c.setAttribute('aria-hidden', 'true');
+        Array.prototype.slice.call(c.querySelectorAll('video')).forEach(function (v) {
+          v.setAttribute('autoplay', '');
+          v.setAttribute('muted', '');
+          v.setAttribute('playsinline', '');
+          v.setAttribute('webkit-playsinline', '');
+          v.muted = true;
+          delete v.dataset.vsBound;
+        });
+        trackEl.appendChild(c);
+      }
+    }
+
+    function applyWidths() {
+      var w = sw() + 'px';
+      Array.prototype.slice.call(trackEl.children)
+        .forEach(function (s) { s.style.width = w; });
+    }
+
+    /* Real slide index from scrollLeft (no prepend offset) */
+    function currentRealIdx() {
+      var idx = Math.round(trackEl.scrollLeft / sw());
+      return ((idx % total) + total) % total;
+    }
+
+    /* ── Dots ── */
+    function buildDots() {
+      if (!dotsWrap) return;
+      dotsWrap.innerHTML = '';
+      for (var i = 0; i < total; i++) {
+        var btn = document.createElement('button');
+        btn.className = 'vs-dot' + (i === 0 ? ' is-active' : '');
+        btn.setAttribute('data-ri', String(i));
+        btn.setAttribute('aria-label', 'Slide ' + (i + 1));
+        dotsWrap.appendChild(btn);
+      }
+      Array.prototype.slice.call(dotsWrap.querySelectorAll('.vs-dot'))
+        .forEach(function (dot) {
+          dot.addEventListener('click', function () {
+            var ri = parseInt(dot.getAttribute('data-ri'), 10);
+            trackEl.scrollTo({ left: ri * sw(), behavior: 'smooth' });
+            resetAuto();
+          });
+        });
+    }
+
+    function updateDots() {
+      if (!dotsWrap) return;
+      var ri = currentRealIdx();
+      Array.prototype.slice.call(dotsWrap.querySelectorAll('.vs-dot'))
+        .forEach(function (d) {
+          d.classList.toggle('is-active', parseInt(d.getAttribute('data-ri'), 10) === ri);
+        });
+    }
+
+    /* ── Infinite loop: detect when user scrolls into the appended-clone zone ──
+       Clone zone starts at total * sw (right after the last real slide).
+       We jump back by total * sw to the equivalent real slide position. */
+    var scrollTimer;
+    trackEl.addEventListener('scroll', function () {
+      if (isJumping) return;
+      updateDots();
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function () {
+        if (isJumping) return;
+        var s       = trackEl.scrollLeft;
+        var cloneStart = total * sw();
+        if (s >= cloneStart - 2) {
+          isJumping = true;
+          trackEl.scrollLeft = s - total * sw();
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () { isJumping = false; });
+          });
+        }
+      }, 80);
+    }, { passive: true });
+
+    /* ── Arrows ── */
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function () {
+        var s = trackEl.scrollLeft;
+        if (s < sw() * 0.5) {
+          /* At the first real slide — wrap to last.
+             Jump directly to the last-visible real position (no animation).
+             One frame flash is acceptable and much better than no autoplay. */
+          isJumping = true;
+          trackEl.scrollLeft = (total - pp()) * sw();
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              isJumping = false;
+              updateDots();
+            });
+          });
+        } else {
+          trackEl.scrollBy({ left: -sw(), behavior: 'smooth' });
+          resetAuto();
+        }
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function () {
+        trackEl.scrollBy({ left: sw(), behavior: 'smooth' });
+        resetAuto();
+      });
+    }
+
+    /* ── Slider autoplay ── */
+    function startAuto() {
+      if (!doAutoplay) return;
+      clearInterval(autoTimer);
+      autoTimer = setInterval(function () {
+        trackEl.scrollBy({ left: sw(), behavior: 'smooth' });
+      }, autoInterval);
+    }
+    function resetAuto() {
+      if (!doAutoplay) return;
+      clearInterval(autoTimer);
+      startAuto();
+    }
+
+    /* ── Resize ── */
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        var ri = currentRealIdx();
+        buildClones();
+        applyWidths();
+        buildDots();
+        bindAllVideos(sectionEl);
+        trackEl.scrollLeft = ri * sw();
+        updateDots();
+      }, 100);
+    });
+
+    /* ── Boot ──
+       Double rAF ensures layout is complete so offsetWidth is accurate.
+       Because real slides start at scroll=0 (no prepend offset),
+       the initial render already shows the correct content — the double rAF
+       here is only needed for JS layout reads, NOT to set scroll position.
+       iOS sees real slides from the first paint and processes autoplay naturally. */
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        buildClones();
+        applyWidths();
+        buildDots();
+        bindAllVideos(sectionEl);
+        startAuto();
+      });
+    });
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     VIDEO BINDING
+     Per-video IntersectionObserver with the default viewport root.
+     overflow:hidden on .vs-outer means videos scrolled off the side have
+     zero viewport intersection, so play() is only called on truly visible
+     videos — which is exactly what iOS Safari requires.
+     ───────────────────────────────────────────────────────────────────── */
+  function bindAllVideos(sectionEl) {
+    if (!sectionEl) return;
+    Array.prototype.slice.call(sectionEl.querySelectorAll('video'))
+      .forEach(function (v) { bindVideo(v); });
+  }
+
+  function bindVideo(v) {
+    if (v.dataset.vsBound) return;
+    v.dataset.vsBound = '1';
+    v.muted = true;
+
+    var item = v.parentNode;
+    while (item && !item.classList.contains('vs-item')) item = item.parentNode;
+    if (item) {
+      v.addEventListener('playing', function () { item.classList.add('playing'); });
+      v.addEventListener('pause',   function () { item.classList.remove('playing'); });
+      var cover = item.querySelector('.vs-cover');
+      if (cover) {
+        cover.addEventListener('click', function () {
+          v.muted = true;
+          var p = v.play();
+          if (p && p.catch) p.catch(function () {});
+        });
+      }
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      var e = entries[0];
+      if (e.isIntersecting) {
+        v.muted = true;
+        var p = v.play();
+        if (p && p.catch) {
+          p.catch(function () {
+            /* iOS may reject play() if data isn't ready yet — retry on canplay */
+            function onReady() {
+              v.removeEventListener('canplay', onReady);
+              v.muted = true;
+              var p2 = v.play();
+              if (p2 && p2.catch) p2.catch(function () {});
+            }
+            v.addEventListener('canplay', onReady);
+          });
+        }
+      } else {
+        if (!v.paused) v.pause();
+      }
+    }, { threshold: 0.1 });
+
+    io.observe(v);
+  }
+
+  /* ── Entry point ── */
+  function init() {
+    var sectionEl = document.getElementById('vs-' + SID);
+    if (!sectionEl) return;
+    Array.prototype.slice.call(sectionEl.querySelectorAll('video')).forEach(function (v) {
+      delete v.dataset.vsBound;
+    });
+    run(sectionEl);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  document.addEventListener('shopify:section:load', init);
+
+})();
+</script>

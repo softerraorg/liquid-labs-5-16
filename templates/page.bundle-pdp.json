@@ -1,0 +1,688 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "padding_top": 28,
+        "padding_bottom": 28
+      }
+    },
+    "main_bundle_product_ncPTeB": {
+      "type": "main-bundle-product",
+      "disabled": true,
+      "name": "Bundle Product",
+      "settings": {
+        "brand_label": "Liquid Labs",
+        "bundle_option_name": "Bundle & Save",
+        "single_bundle_value": "Single",
+        "quantity_heading": "Choose Quantity",
+        "popular_label": "MOST POPULAR",
+        "popular_tile": "3",
+        "default_tile": "3",
+        "tile_1_label": "1 Bag",
+        "tile_1_sub": "15 Sticks",
+        "tile_1_bundle_value": "Single",
+        "tile_1_price": 2400,
+        "tile_2_label": "2 Bags",
+        "tile_2_sub": "30 Sticks",
+        "tile_2_bundle_value": "Duo",
+        "tile_2_price": 4000,
+        "tile_3_label": "3 Bags",
+        "tile_3_sub": "45 Sticks",
+        "tile_3_bundle_value": "Trio",
+        "tile_3_price": 5600,
+        "flavor_heading": "Select Your Flavors",
+        "bag_label_prefix": "Bag",
+        "mix_label": "Mix and match your way!",
+        "mix_icon_url": "",
+        "purchase_heading": "Purchase Options",
+        "subscribe_title": "Subscribe & Save",
+        "subscribe_tag": "BEST VALUE",
+        "onetime_title": "One-Time Purchase",
+        "perk_cancel": "Cancel anytime",
+        "perk_cancel_icon_url": "",
+        "perk_skip": "Skip or pause anytime",
+        "perk_skip_icon_url": "",
+        "perk_shipping": "Free shipping on subscriptions",
+        "perk_shipping_icon_url": "",
+        "trust_ships": "Ships in 4-6 weeks",
+        "trust_ships_icon_url": "",
+        "trust_secure": "Secure checkout",
+        "trust_secure_icon_url": "",
+        "trust_founder": "Founder pricing",
+        "trust_founder_icon_url": "",
+        "shipping_note": "Free shipping on orders over $x",
+        "guarantee_icon_url": "",
+        "guarantee_title": "30-Day Satisfaction Guarantee",
+        "guarantee_text": "Not satisfied? We'll make it right.",
+        "color_scheme": "",
+        "enable_sticky_info": true,
+        "hide_slider_buttons_mobile": false,
+        "show_title_at_top": false,
+        "gallery_layout": "thumbnail",
+        "mobile_thumbnails": "show",
+        "image_zoom": "lightbox",
+        "hide_variants": true,
+        "enable_video_looping": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "ll_science_stats_TTkFr7": {
+      "type": "ll-science-stats",
+      "blocks": {
+        "stat_j4qcry": {
+          "type": "stat",
+          "settings": {
+            "stat_heading": "+15%",
+            "stat_subheading": "<p>Increase in strength and power output</p>"
+          }
+        },
+        "stat_adJTn6": {
+          "type": "stat",
+          "settings": {
+            "stat_heading": "+2–5 lbs",
+            "stat_subheading": "<p>average muscle gain in the first few weeks</p>"
+          }
+        },
+        "stat_CiakVn": {
+          "type": "stat",
+          "settings": {
+            "stat_heading": "+15%",
+            "stat_subheading": "<p>faster recovery between sets and workouts</p>"
+          }
+        }
+      },
+      "block_order": [
+        "stat_j4qcry",
+        "stat_adJTn6",
+        "stat_CiakVn"
+      ],
+      "disabled": true,
+      "name": "LL Science stats",
+      "settings": {
+        "bg_image_desktop": "shopify://shop_images/Group_33_1.png",
+        "bg_image_mobile": "shopify://shop_images/Frame_85.png",
+        "bg_color": "rgba(0,0,0,0)",
+        "text_color": "#ffffff",
+        "heading": "Creatine backed by science",
+        "subheading": "<p>One of the most studied supplements, proven to support strength, performance, and recovery by helping your body produce more energy during workouts.</p>",
+        "padding_top_desktop": 100,
+        "padding_bottom_desktop": 100,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
+      }
+    },
+    "custom_video_showcase_DXRyBX": {
+      "type": "custom-video-showcase",
+      "blocks": {
+        "video_BAWNA4": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/IMG_1307 2.mov"
+          }
+        },
+        "video_b9QBNE": {
+          "type": "video",
+          "settings": {
+            "cover_image": "shopify://shop_images/9292B4B04681E4A75E4F07C310528C82.jpg"
+          }
+        },
+        "video_jxxLJx": {
+          "type": "video",
+          "settings": {
+            "cover_image": "shopify://shop_images/IMG_1256.heic"
+          }
+        },
+        "video_WKPRR3": {
+          "type": "video",
+          "settings": {
+            "cover_image": "shopify://shop_images/IMG_1252.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "video_BAWNA4",
+        "video_b9QBNE",
+        "video_jxxLJx",
+        "video_WKPRR3"
+      ],
+      "disabled": true,
+      "name": "Custom Video Section",
+      "settings": {
+        "title": "Pour. Shake. Done in seconds.",
+        "padding_top": 60,
+        "padding_bottom": 60,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "layout": "slider",
+        "video_width": 360,
+        "background_color": "",
+        "slides_to_show": 4,
+        "slides_to_show_mobile": 2,
+        "show_arrows": false,
+        "show_dots": false,
+        "autoplay": false,
+        "autoplay_speed": 3000
+      }
+    },
+    "ll_backed_by_science_ndrRg9": {
+      "type": "ll-backed-by-science",
+      "blocks": {
+        "ingredient_XQcAUQ": {
+          "type": "ingredient",
+          "settings": {
+            "image": "shopify://shop_images/Image.png",
+            "icon": "shopify://shop_images/Image_7.png",
+            "title": "Creatine Monohydrate",
+            "amount": "5G",
+            "description": "<p>Supports strength, muscle recovery, and daily performance while helping improve power output and hydration.</p>"
+          }
+        },
+        "ingredient_E4ryBU": {
+          "type": "ingredient",
+          "settings": {
+            "image": "shopify://shop_images/Image_1.png",
+            "icon": "shopify://shop_images/Image_8.png",
+            "title": "Coconut Water Powder",
+            "amount": "",
+            "description": "<p>Naturally sourced hydration support packed with electrolytes to help replenish and refresh faster.</p>"
+          }
+        },
+        "ingredient_RVdL4A": {
+          "type": "ingredient",
+          "settings": {
+            "image": "shopify://shop_images/Image_2.png",
+            "icon": "shopify://shop_images/Image_9.png",
+            "title": "Potassium",
+            "amount": "130MG",
+            "description": "<p>Helps regulate fluid balance and supports proper muscle and nerve function for better recovery.</p>"
+          }
+        },
+        "ingredient_hinqtm": {
+          "type": "ingredient",
+          "settings": {
+            "image": "shopify://shop_images/Groups.png",
+            "icon": "shopify://shop_images/Image_10.png",
+            "title": "Sodium",
+            "amount": "150MG",
+            "description": "<p>Essential electrolyte that helps maintain hydration balance and supports muscle function during activity.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "ingredient_XQcAUQ",
+        "ingredient_E4ryBU",
+        "ingredient_RVdL4A",
+        "ingredient_hinqtm"
+      ],
+      "disabled": true,
+      "name": "LL Backed by Science",
+      "settings": {
+        "heading": "Backed by Science. Formulated for Performance.",
+        "subheading": "<p>Every ingredient is carefully selected to support hydration, endurance, recovery, and daily performance with no unnecessary fillers or complicated mixes.</p>",
+        "background_color": "#ffffff",
+        "heading_color": "#353636",
+        "subheading_color": "#7c7d81",
+        "card_background": "#ffffff",
+        "card_border_color": "#cfdefa",
+        "card_title_color": "#353636",
+        "card_text_color": "#7c7d81",
+        "padding_top_desktop": 60,
+        "padding_bottom_desktop": 80,
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 48
+      }
+    },
+    "ll_daily_use_timeline_YRTRgp": {
+      "type": "ll-daily-use-timeline",
+      "blocks": {
+        "timeline_card_6gpL96": {
+          "type": "timeline_card",
+          "settings": {
+            "badge_text": "Week 01",
+            "title": "Saturation Begins",
+            "description": "Creatine starts working. Your body begins to saturate.",
+            "milestone_label": "",
+            "milestone_icon": "shopify://shop_images/Image_3.png",
+            "items": "Fuller muscle appearance\nMuscle creatine stores begin increasing\nReduced workout fatigue\nMuscles hold water more efficiently"
+          }
+        },
+        "timeline_card_VKxNqK": {
+          "type": "timeline_card",
+          "settings": {
+            "badge_text": "Week 02",
+            "title": "Strength Activation",
+            "description": "You'll start to feel stronger, recover faster, and train harder.",
+            "milestone_label": "",
+            "milestone_icon": "shopify://shop_images/Button.png",
+            "items": "Improved ATP regeneration\nBetter training endurance\nFaster recovery between sets\nIncreased workout output"
+          }
+        },
+        "timeline_card_z3N3WA": {
+          "type": "timeline_card",
+          "settings": {
+            "badge_text": "Week 03",
+            "title": "Performance Breakthrough",
+            "description": "Noticeable improvements in strength, power, and recovery.",
+            "milestone_label": "",
+            "milestone_icon": "shopify://shop_images/Group_1707485046.png",
+            "items": "Higher strength potential\nBetter explosive power\nImproved recovery speed\nEnhanced training consistency"
+          }
+        },
+        "timeline_card_MbNKMq": {
+          "type": "timeline_card",
+          "settings": {
+            "badge_text": "Week 04",
+            "title": "New Baseline",
+            "description": "Your body adapts and you perform at a whole new level.",
+            "milestone_label": "",
+            "milestone_icon": "shopify://shop_images/Image_5.png",
+            "items": "Creatine stores fully maintained\nSustained power and endurance\nImproved muscle hydration\nBetter long-term performance"
+          }
+        }
+      },
+      "block_order": [
+        "timeline_card_6gpL96",
+        "timeline_card_VKxNqK",
+        "timeline_card_z3N3WA",
+        "timeline_card_MbNKMq"
+      ],
+      "disabled": true,
+      "name": "LL Daily Use Timeline",
+      "settings": {
+        "heading": "What Happens After Daily Use",
+        "description": "<p>Individual response times may vary depending on hydration, training intensity, and consistency of use.</p>",
+        "background_color": "#ffffff",
+        "heading_color": "#333333",
+        "description_color": "#7c7d81",
+        "card_background": "#ffffff",
+        "card_border_color": "#dfe8f6",
+        "card_title_color": "#2b2b2b",
+        "card_text_color": "#4a4a4a",
+        "badge_background": "#3a6ac6",
+        "badge_text_color": "#ffffff",
+        "check_color": "#3a6ac6",
+        "show_overlay": true,
+        "line_color": "#6088cc",
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 20,
+        "padding_top_mobile": 48,
+        "padding_bottom_mobile": 48
+      }
+    },
+    "ll_inside_each_stick_Uic9tf": {
+      "type": "LL-inside-each-stick",
+      "blocks": {
+        "nutrition_row_UUtVRY": {
+          "type": "nutrition_row",
+          "settings": {
+            "name": "CREATINE MONOHYDRATE",
+            "amount": "5g"
+          }
+        },
+        "nutrition_row_wgLniL": {
+          "type": "nutrition_row",
+          "settings": {
+            "name": "CALORIES",
+            "amount": "0g"
+          }
+        },
+        "nutrition_row_WVFD3q": {
+          "type": "nutrition_row",
+          "settings": {
+            "name": "SUGAR",
+            "amount": "0g"
+          }
+        },
+        "nutrition_row_dwFeFY": {
+          "type": "nutrition_row",
+          "settings": {
+            "name": "SODIUM",
+            "amount": "150mg"
+          }
+        },
+        "nutrition_row_eL7aJj": {
+          "type": "nutrition_row",
+          "settings": {
+            "name": "POTASSIUM",
+            "amount": "150mg"
+          }
+        },
+        "nutrition_row_mBVttB": {
+          "type": "nutrition_row",
+          "settings": {
+            "name": "MAGNESIUM",
+            "amount": "35mg"
+          }
+        },
+        "stat_PJTfiX": {
+          "type": "stat",
+          "settings": {
+            "icon": "shopify://shop_images/Image_54.png",
+            "label": "PERFORMANCE",
+            "label_color": "#000000",
+            "values": "<p>Creatine Monohydrate-5g</p>",
+            "caption": "<p>Supports strength, power and muscle recovery.</p>"
+          }
+        },
+        "stat_DzaArd": {
+          "type": "stat",
+          "settings": {
+            "icon": "shopify://shop_images/Image_55.png",
+            "label": "HYDRATION",
+            "label_color": "#000000",
+            "values": "<p>Sodium-150mg</p><p>Potassium-150mg</p><p>Magnesium-35mg</p>",
+            "caption": "<p>Helps maintain fluid balance and support hydration.</p>"
+          }
+        },
+        "stat_aA4tV6": {
+          "type": "stat",
+          "settings": {
+            "icon": "shopify://shop_images/Image_56.png",
+            "label": "CLEAN FORMULA",
+            "label_color": "#000000",
+            "values": "<p>Sugar — 0g</p><p>Calories — 0g</p>",
+            "caption": "<p>Zero sugar. Zero calories. Nothing unnecessary.</p>"
+          }
+        },
+        "feature_JjkrTY": {
+          "type": "feature",
+          "settings": {
+            "icon": "shopify://shop_images/Image_59.png",
+            "title": "Mixes Instantly",
+            "text": "<p>No clumps. No hassle.</p>"
+          }
+        },
+        "feature_8E9Waw": {
+          "type": "feature",
+          "settings": {
+            "icon": "shopify://shop_images/Image_57.png",
+            "title": "Travel Friendly",
+            "text": "<p>Take it anywhere.</p>"
+          }
+        },
+        "feature_VVgzEe": {
+          "type": "feature",
+          "settings": {
+            "icon": "shopify://shop_images/Image_58.png",
+            "title": "Zero Sugar",
+            "text": "<p>Clean performance you can trust.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "nutrition_row_UUtVRY",
+        "nutrition_row_wgLniL",
+        "nutrition_row_WVFD3q",
+        "nutrition_row_dwFeFY",
+        "nutrition_row_eL7aJj",
+        "nutrition_row_mBVttB",
+        "stat_PJTfiX",
+        "stat_DzaArd",
+        "stat_aA4tV6",
+        "feature_JjkrTY",
+        "feature_8E9Waw",
+        "feature_VVgzEe"
+      ],
+      "disabled": true,
+      "name": "LL Inside Each Stick",
+      "settings": {
+        "heading": "What's inside each stick",
+        "intro": "<p>Each stick delivers 5g of creatine monohydrate plus key electrolytes to support strength, hydration, and recovery — without the mess of traditional powders.</p>",
+        "background_color": "#ffffff",
+        "heading_color": "#000000",
+        "text_color": "#000000",
+        "table_label_color": "#000000",
+        "table_value_color": "#000000",
+        "padding_top_desktop": 60,
+        "padding_bottom_desktop": 60,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
+      }
+    },
+    "ll_accordion_img_QaFTcd": {
+      "type": "LL-accordion-img",
+      "blocks": {
+        "accordion_row_PMNqnC": {
+          "type": "accordion_row",
+          "settings": {
+            "heading": "Product Description",
+            "content": "<p>Add your content here.</p>",
+            "open_by_default": false
+          }
+        },
+        "accordion_row_BMMa9f": {
+          "type": "accordion_row",
+          "settings": {
+            "heading": "Product Description",
+            "content": "<p>Add your content here.</p>",
+            "open_by_default": false
+          }
+        },
+        "accordion_row_4RTVAN": {
+          "type": "accordion_row",
+          "settings": {
+            "heading": "Product Description",
+            "content": "<p>Add your content here.</p>",
+            "open_by_default": false
+          }
+        },
+        "accordion_row_mJKBWU": {
+          "type": "accordion_row",
+          "settings": {
+            "heading": "Product Description",
+            "content": "<p>Add your content here.</p>",
+            "open_by_default": false
+          }
+        },
+        "accordion_row_bcHrH3": {
+          "type": "accordion_row",
+          "settings": {
+            "heading": "Product Description",
+            "content": "<p>Add your content here.</p>",
+            "open_by_default": false
+          }
+        }
+      },
+      "block_order": [
+        "accordion_row_PMNqnC",
+        "accordion_row_BMMa9f",
+        "accordion_row_4RTVAN",
+        "accordion_row_mJKBWU",
+        "accordion_row_bcHrH3"
+      ],
+      "disabled": true,
+      "name": "LL Accordion + Image",
+      "settings": {
+        "heading": "<p>No Scoop. No Shaker. Just Results.</p><p>5g creatine + electrolytes in a grab-and-go stick made for daily performance.</p>",
+        "image": "shopify://shop_images/picture.styles_placeholder__i3I9x.png",
+        "image_bg_color": "#dff1ff",
+        "image_radius": 0,
+        "image_padding": 0,
+        "image_flip_on_mobile": false,
+        "section_bg_color": "#ffffff",
+        "heading_color": "#000000",
+        "accordion_bg_color": "#ffffff",
+        "divider_color": "#e5e7eb",
+        "row_label_color": "#000000",
+        "row_body_color": "#000000",
+        "icon_border_color": "#f7f7f7",
+        "icon_color": "#000000",
+        "padding_top_desktop": 60,
+        "padding_bottom_desktop": 60,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
+      }
+    },
+    "ll_founding_member_ReP9iF": {
+      "type": "ll-founding-member",
+      "blocks": {
+        "feature_LbVpBU": {
+          "type": "feature",
+          "disabled": true,
+          "settings": {
+            "position": "left",
+            "flex_direction": "column",
+            "text": "5g Creatine Power<br>Supports strength and <br>muscle output",
+            "text_wrap": false,
+            "line_image": "shopify://shop_images/Group_17_1.png",
+            "pos_top_desktop": -5,
+            "pos_left_desktop": 5,
+            "pos_top_mobile": 0,
+            "pos_left_mobile": 5,
+            "line_width_desktop": 180,
+            "line_width_mobile": 94,
+            "text_max_width_desktop": 180,
+            "text_max_width_mobile": 100
+          }
+        },
+        "feature_kYQ3JF": {
+          "type": "feature",
+          "disabled": true,
+          "settings": {
+            "position": "right",
+            "flex_direction": "column",
+            "text": "Electrolytes Included\nHydration that keeps you going",
+            "text_wrap": false,
+            "line_image": "shopify://shop_images/Group_19.png",
+            "pos_top_desktop": 60,
+            "pos_left_desktop": 55,
+            "pos_top_mobile": 65,
+            "pos_left_mobile": 55,
+            "line_width_desktop": 180,
+            "line_width_mobile": 94,
+            "text_max_width_desktop": 180,
+            "text_max_width_mobile": 100
+          }
+        }
+      },
+      "block_order": [
+        "feature_LbVpBU",
+        "feature_kYQ3JF"
+      ],
+      "disabled": true,
+      "name": "LL Founding Member",
+      "settings": {
+        "heading": "Unlock Your Peak Performance",
+        "show_fm_layout": false,
+        "image_max_width_desktop": 370,
+        "image_max_width_mobile": 290,
+        "button_text": "Pre-Order Now!",
+        "button_link": "#",
+        "bg_color": "#ffffff",
+        "text_color": "#ffffff",
+        "padding_top_desktop": 80,
+        "padding_bottom_desktop": 80,
+        "padding_top_mobile": 50,
+        "padding_bottom_mobile": 50
+      }
+    },
+    "collapsible_content_kbdGzc": {
+      "type": "collapsible-content",
+      "blocks": {
+        "collapsible_row_bLrDQL": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What is creatine?",
+            "icon": "none",
+            "row_content": "<p>Creatine is an amino acid found in your muscles and brain. The body naturally produces creatine, and it can also be obtained through foods like meat. It is one of the most studied fitness supplements, and research shows it can increase strength, improve recovery, and support mental performance.</p>",
+            "page": ""
+          }
+        },
+        "collapsible_row_6634y7": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "What are the main benefits of creatine supplementation?",
+            "icon": "none",
+            "row_content": "<p>Creatine helps boost strength, power, and muscle growth while improving recovery and giving you more energy during intense workouts. It can also support focus and mental performance.</p>",
+            "page": ""
+          }
+        },
+        "collapsible_row_Hhh6n7": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "Does creatine have any negative side effects?",
+            "icon": "none",
+            "row_content": "<p>Creatine is very safe for most people. Some may notice mild water retention, slight weight gain, or occasional stomach discomfort if taking too much. Staying hydrated and using a normal daily dose helps avoid issues.</p>",
+            "page": ""
+          }
+        }
+      },
+      "block_order": [
+        "collapsible_row_bLrDQL",
+        "collapsible_row_6634y7",
+        "collapsible_row_Hhh6n7"
+      ],
+      "disabled": true,
+      "name": "t:sections.collapsible_content.presets.name",
+      "settings": {
+        "custom-class": "productFaqs",
+        "caption": "",
+        "heading": "Frequently Asked Questions",
+        "heading_size": "h1",
+        "heading_alignment": "left",
+        "layout": "none",
+        "container_color_scheme": "scheme-2",
+        "color_scheme": "",
+        "open_first_collapsible_row": true,
+        "image_ratio": "adapt",
+        "desktop_layout": "image_second",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
+    "apps_D8NTiR": {
+      "type": "apps",
+      "blocks": {
+        "forms_inline_dtB8Ur": {
+          "type": "shopify://apps/forms/blocks/inline/8744a304-fcb1-4347-b211-bb6b4759a76a",
+          "settings": {
+            "form_id": "919075",
+            "text_color": "#202020",
+            "button_background_color": "#202020",
+            "button_label_color": "#ffffff",
+            "links_color": "#1878b9",
+            "errors_color": "#e02229",
+            "text_alignment": "center",
+            "form_alignment": "center",
+            "padding_top": 26,
+            "padding_bottom": 24,
+            "padding_right": 0,
+            "padding_left": 0
+          }
+        }
+      },
+      "block_order": [
+        "forms_inline_dtB8Ur"
+      ],
+      "disabled": true,
+      "settings": {
+        "include_margins": true
+      }
+    }
+  },
+  "order": [
+    "main",
+    "main_bundle_product_ncPTeB",
+    "ll_science_stats_TTkFr7",
+    "custom_video_showcase_DXRyBX",
+    "ll_backed_by_science_ndrRg9",
+    "ll_daily_use_timeline_YRTRgp",
+    "ll_inside_each_stick_Uic9tf",
+    "ll_accordion_img_QaFTcd",
+    "ll_founding_member_ReP9iF",
+    "collapsible_content_kbdGzc",
+    "apps_D8NTiR"
+  ]
+}

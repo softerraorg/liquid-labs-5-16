@@ -1,0 +1,235 @@
+{% comment %}
+  Renders product variant-picker
+
+  Accepts:
+  - product: {Object} product object.
+  - block: {Object} passing the block information.
+  - product_form_id: {String} Id of the product form to which the variant picker is associated.
+  Usage:
+  {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
+{% endcomment %}
+{%- unless product.has_only_default_variant -%}
+  <variant-selects
+    id="variant-selects-{{ section.id }}"
+    data-section="{{ section.id }}"
+    {{ block.shopify_attributes }}
+  >
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        assign swatch_count = option.values | map: 'swatch' | compact | size
+        assign picker_type = block.settings.picker_type
+
+        if swatch_count > 0 and block.settings.swatch_shape != 'none'
+          if block.settings.picker_type == 'dropdown'
+            assign picker_type = 'swatch_dropdown'
+          else
+            assign picker_type = 'swatch'
+          endif
+        endif
+      -%}
+      {%- if picker_type == 'swatch' -%}
+        <fieldset class="js product-form__input product-form__input--swatch">
+          <legend class="form__label">
+            {{ option.name }}:
+            <span data-selected-value>
+              {{- option.selected_value -}}
+            </span>
+          </legend>
+          {% render 'product-variant-options',
+            product: product,
+            option: option,
+            block: block,
+            picker_type: picker_type
+          %}
+        </fieldset>
+      {%- elsif picker_type == 'button' -%}
+        <fieldset id="product-option-{{ option.position }}" class="js product-form__input product-form__input--pill">
+          <legend class="form__label">{{ option.name }}</legend>
+          {% render 'product-variant-options',
+            product: product,
+            option: option,
+            block: block,
+            picker_type: picker_type
+          %}
+        </fieldset>
+      {%- else -%}
+        <div class="product-form__input product-form__input--dropdown">
+          <label class="form__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+            {{ option.name }}
+          </label>
+          <div class="select">
+            {%- if picker_type == 'swatch_dropdown' -%}
+              <span
+                data-selected-value
+                class="dropdown-swatch"
+              >
+                {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+              </span>
+            {%- endif -%}
+            <select
+              id="Option-{{ section.id }}-{{ forloop.index0 }}"
+              class="select__select"
+              name="options[{{ option.name | escape }}]"
+              form="{{ product_form_id }}"
+            >
+              {% render 'product-variant-options',
+                product: product,
+                option: option,
+                block: block,
+                picker_type: picker_type
+              %}
+            </select>
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+
+    <script type="application/json" data-selected-variant>
+      {{ product.selected_or_first_available_variant | json }}
+    </script>
+  </variant-selects>
+
+  {%- liquid
+    assign bundle_flavor_handles = 'creatine-electrolytes' | split: ','
+    assign is_bundle_flavor_product = false
+    if bundle_flavor_handles contains product.handle
+      assign is_bundle_flavor_product = true
+    endif
+  -%}
+
+  {%- if is_bundle_flavor_product -%}
+    {%- assign flavors_list = product.metafields.custom.flavors.value -%}
+
+    {%- if flavors_list and flavors_list.size > 0 -%}
+      <div id="bundle-flavor-picker-{{ section.id }}" class="bundle-flavor-picker">
+        <p class="bundle-flavor-picker__heading">Select your flavor:</p>
+
+        {%- for i in (1..3) -%}
+          <div class="bundle-flavor-picker__row" data-flavor-row="{{ i }}" {% if i > 1 %}style="display: none;"{% endif %}>
+            <label class="bundle-flavor-picker__label" for="bundle-flavor-{{ i }}-{{ section.id }}">Flavor</label>
+            <div class="bundle-flavor-picker__select-wrapper">
+              <select
+                id="bundle-flavor-{{ i }}-{{ section.id }}"
+                class="bundle-flavor-select"
+                data-flavor-index="{{ i }}"
+                form="{{ product_form_id }}"
+              >
+                <option value="">Choose a flavor...</option>
+                {%- for flavor in flavors_list -%}
+                  <option value="{{ flavor | escape }}">{{ flavor }}</option>
+                {%- endfor -%}
+              </select>
+              <svg class="bundle-flavor-picker__caret" xmlns="http://www.w3.org/2000/svg" width="12" height="7" viewBox="0 0 12 7" fill="none">
+                <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <script>
+        (function() {
+          var SECTION_ID = {{ section.id | json }};
+          var FORM_ID = {{ product_form_id | json }};
+          var picker = document.getElementById('bundle-flavor-picker-' + SECTION_ID);
+          if (!picker) return;
+
+          var rows = picker.querySelectorAll('[data-flavor-row]');
+          var heading = picker.querySelector('.bundle-flavor-picker__heading');
+
+          function getFlavorCount(val) {
+            var v = (val || '').toLowerCase().trim();
+            if (v === 'duo') return 2;
+            if (v === 'trio') return 3;
+            return 1;
+          }
+
+          function updatePicker(bundleValue) {
+            var count = getFlavorCount(bundleValue);
+
+            picker.style.display = '';
+            heading.textContent = count <= 1 ? 'Select your flavor:' : 'Select your flavors:';
+
+            rows.forEach(function(row, i) {
+              var select = row.querySelector('.bundle-flavor-select');
+              var label = row.querySelector('.bundle-flavor-picker__label');
+              if (i < count) {
+                row.style.display = '';
+                select.setAttribute('name', 'properties[Flavor ' + (i + 1) + ']');
+                label.textContent = count <= 1 ? 'Flavor' : 'Flavor ' + (i + 1);
+              } else {
+                row.style.display = 'none';
+                select.removeAttribute('name');
+                select.value = '';
+              }
+            });
+          }
+
+          function syncState() {
+            var bundleOpt = document.getElementById('product-option-2');
+            if (bundleOpt) {
+              var checked = bundleOpt.querySelector('input[type="radio"]:checked');
+              if (checked) { updatePicker(checked.value); return; }
+            }
+            updatePicker('single');
+          }
+
+          document.addEventListener('change', function(e) {
+            if (e.target.closest && e.target.closest('#product-option-2') && e.target.type === 'radio') {
+              updatePicker(e.target.value);
+            }
+          });
+
+          var vs = document.getElementById('variant-selects-' + SECTION_ID);
+          if (vs) {
+            new MutationObserver(function() { syncState(); }).observe(vs, { childList: true });
+          }
+
+          syncState();
+
+          function setupValidation() {
+            var form = document.getElementById(FORM_ID);
+            if (!form) return;
+
+            form.addEventListener('submit', function(e) {
+              if (picker.style.display === 'none') return;
+
+              var activeSelects = picker.querySelectorAll('.bundle-flavor-select[name]');
+              var valid = true;
+              activeSelects.forEach(function(select) {
+                var wrapper = select.closest('.bundle-flavor-picker__select-wrapper');
+                if (!select.value) {
+                  valid = false;
+                  wrapper.classList.add('bundle-flavor-select--error');
+                } else {
+                  wrapper.classList.remove('bundle-flavor-select--error');
+                }
+              });
+
+              if (!valid) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+              }
+            }, true);
+          }
+
+          picker.addEventListener('change', function(e) {
+            if (e.target.classList.contains('bundle-flavor-select') && e.target.value) {
+              var wrapper = e.target.closest('.bundle-flavor-picker__select-wrapper');
+              if (wrapper) wrapper.classList.remove('bundle-flavor-select--error');
+            }
+          });
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupValidation);
+          } else {
+            setupValidation();
+          }
+        })();
+      </script>
+    {%- endif -%}
+  {%- endif -%}
+{%- endunless -%}

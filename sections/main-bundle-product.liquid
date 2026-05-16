@@ -1,0 +1,760 @@
+<div
+  id="MainBundleProduct-{{ section.id }}"
+  class="bundle-pdp section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}{% if section.settings.enable_sticky_info %} bundle-pdp--sticky{% endif %}"
+  data-section="{{ section.id }}"
+  data-product-id="{{ product.id }}"
+  data-skip-cart="{{ section.settings.skip_cart }}"
+  data-lock-gallery="{{ section.settings.lock_gallery_image }}"
+>
+  {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
+  {{ 'component-price.css' | asset_url | stylesheet_tag }}
+  {{ 'component-slider.css' | asset_url | stylesheet_tag }}
+  {{ 'bundle-pdp.css' | asset_url | stylesheet_tag }}
+
+  {% unless product.has_only_default_variant %}
+    {{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
+    {{ 'component-swatch-input.css' | asset_url | stylesheet_tag }}
+    {{ 'component-swatch.css' | asset_url | stylesheet_tag }}
+  {% endunless %}
+
+  {%- style -%}
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+      padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    }
+    @media screen and (min-width: 750px) {
+      .section-{{ section.id }}-padding {
+        padding-top: {{ section.settings.padding_top }}px;
+        padding-bottom: {{ section.settings.padding_bottom }}px;
+      }
+    }
+  {%- endstyle -%}
+
+  {% if section.settings.hide_slider_buttons_mobile %}
+    <style>
+      @media screen and (max-width: 749px) {
+        #shopify-section-{{ section.id }} slider-component .slider-button {
+          display: none !important;
+        }
+      }
+    </style>
+  {% endif %}
+
+  <script src="{{ 'bundle-pdp.js' | asset_url }}" defer="defer"></script>
+  {% if section.settings.image_zoom == 'hover' %}
+    <script id="EnableZoomOnHover-bundle" src="{{ 'magnify.js' | asset_url }}" defer="defer"></script>
+  {% endif %}
+  {%- if request.design_mode -%}
+    <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
+  {%- endif -%}
+
+  {% assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' %}
+  {%- assign product_form_id = 'bundle-product-form-' | append: section.id -%}
+
+  {%- liquid
+    assign flavor_option_index = -1
+    for opt in product.options_with_values
+      assign opt_name_dc = opt.name | downcase
+      if opt_name_dc contains 'flavor' or opt_name_dc contains 'flavour' or opt_name_dc contains 'taste'
+        assign flavor_option_index = forloop.index0
+        break
+      endif
+    endfor
+    if flavor_option_index == -1 and product.options_with_values.size > 0
+      assign flavor_option_index = 0
+    endif
+
+    assign bundle_option_index = -1
+    assign bundle_name_dc = section.settings.bundle_option_name | downcase | strip
+    for opt in product.options_with_values
+      assign opt_name_dc = opt.name | downcase | strip
+      if opt_name_dc == bundle_name_dc
+        assign bundle_option_index = forloop.index0
+        break
+      endif
+    endfor
+    if bundle_option_index == -1
+      for opt in product.options_with_values
+        assign opt_name_dc = opt.name | downcase
+        if opt_name_dc contains 'bundle' or opt_name_dc contains 'size' or opt_name_dc contains 'pack'
+          assign bundle_option_index = forloop.index0
+          break
+        endif
+      endfor
+    endif
+
+    assign popular_tile_int = section.settings.popular_tile | plus: 0
+    assign default_tile_int = section.settings.default_tile | plus: 0
+
+    assign tile_1_resolved_price = section.settings.tile_1_price
+    if bundle_option_index >= 0
+      for v in product.variants
+        if v.options[bundle_option_index] == section.settings.tile_1_bundle_value
+          assign tile_1_resolved_price = v.price
+          break
+        endif
+      endfor
+    endif
+  -%}
+
+  <div class="page-width bundle-pdp__page">
+    <div class="bundle-pdp__brand">{{ section.settings.brand_label }}</div>
+
+    {%- if section.settings.show_title_at_top -%}
+      <h1 class="bundle-pdp__title bundle-pdp__title--top">{{ product.title | escape }}</h1>
+    {%- endif -%}
+
+    <div class="bundle-pdp__grid">
+      <div class="bundle-pdp__media product product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }}">
+        {%- if section.settings.lock_gallery_image -%}
+          {% render 'product-media-gallery', variant_images: variant_images, featured_media_override: product.featured_media %}
+        {%- else -%}
+          {% render 'product-media-gallery', variant_images: variant_images %}
+        {%- endif -%}
+      </div>
+
+      <div class="bundle-pdp__info">
+        <section
+          id="BundleProductInfo-{{ section.id }}"
+          class="bundle-pdp__info-inner"
+        >
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when '@app' -%}
+                {% render block %}
+              {%- when 'title' -%}
+                <h1 class="bundle-pdp__title" {{ block.shopify_attributes }}>{{ product.title | escape }}</h1>
+              {%- when 'text' -%}
+                <p
+                  class="bundle-pdp__text inline-richtext{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}"
+                  {{ block.shopify_attributes }}
+                >
+                  {{- block.settings.text -}}
+                </p>
+              {%- when 'description' -%}
+                {%- if product.description != blank -%}
+                  <div class="bundle-pdp__description rte" {{ block.shopify_attributes }}>
+                    {{ product.description }}
+                  </div>
+                {%- endif -%}
+              {%- when 'custom_liquid' -%}
+                {{ block.settings.custom_liquid }}
+              {%- when 'price' -%}
+                <div class="bundle-pdp__inline-price" id="bundle-price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
+                  {%- render 'price', product: product, use_variant: true, show_badges: true, price_class: 'price--large' -%}
+                </div>
+              {%- when 'share' -%}
+                {% liquid
+                  assign share_url = product.selected_variant.url | default: product.url | prepend: request.origin
+                  render 'share-button', block: block, share_link: share_url
+                %}
+              {%- when 'benefit' -%}
+                {%- comment -%} Rendered below the mix caption, not here. {%- endcomment -%}
+            {%- endcase -%}
+          {%- endfor -%}
+
+          <div class="bundle-pdp__quantity-section">
+            <p class="bundle-pdp__section-label">{{ section.settings.quantity_heading }}</p>
+            <div
+              class="bundle-pdp__tiles"
+              role="radiogroup"
+              aria-label="{{ section.settings.quantity_heading | escape }}"
+              data-bundle-option-index="{{ bundle_option_index }}"
+              data-single-bundle-value="{{ section.settings.single_bundle_value | escape }}"
+            >
+              {%- for i in (1..3) -%}
+                {%- case i -%}
+                  {%- when 1 -%}
+                    {%- assign tile_label = section.settings.tile_1_label -%}
+                    {%- assign tile_sub = section.settings.tile_1_sub -%}
+                    {%- assign tile_bundle_value = section.settings.tile_1_bundle_value -%}
+                    {%- assign tile_fallback_price = section.settings.tile_1_price -%}
+                  {%- when 2 -%}
+                    {%- assign tile_label = section.settings.tile_2_label -%}
+                    {%- assign tile_sub = section.settings.tile_2_sub -%}
+                    {%- assign tile_bundle_value = section.settings.tile_2_bundle_value -%}
+                    {%- assign tile_fallback_price = section.settings.tile_2_price -%}
+                  {%- when 3 -%}
+                    {%- assign tile_label = section.settings.tile_3_label -%}
+                    {%- assign tile_sub = section.settings.tile_3_sub -%}
+                    {%- assign tile_bundle_value = section.settings.tile_3_bundle_value -%}
+                    {%- assign tile_fallback_price = section.settings.tile_3_price -%}
+                {%- endcase -%}
+                {%- liquid
+                  assign resolved_price = tile_fallback_price
+                  assign tile_image = product.featured_image
+                  assign tile_media_id = ''
+                  if bundle_option_index >= 0
+                    for v in product.variants
+                      if v.options[bundle_option_index] == tile_bundle_value
+                        assign resolved_price = v.price
+                        if v.featured_image
+                          assign tile_image = v.featured_image
+                        endif
+                        if v.featured_media
+                          assign tile_media_id = v.featured_media.id
+                        endif
+                        break
+                      endif
+                    endfor
+                  endif
+
+                  assign savings_pct = 0
+                  if i > 1 and tile_1_resolved_price > 0
+                    assign tile_1_total = tile_1_resolved_price | times: i
+                    if resolved_price < tile_1_total
+                      assign savings_pct = tile_1_total | minus: resolved_price | times: 100 | divided_by: tile_1_total
+                    endif
+                  endif
+                -%}
+                <button
+                  type="button"
+                  class="bundle-pdp__tile{% if popular_tile_int == i %} bundle-pdp__tile--popular{% endif %}{% if default_tile_int == i %} is-selected{% endif %}"
+                  role="radio"
+                  aria-checked="{% if default_tile_int == i %}true{% else %}false{% endif %}"
+                  data-bag-count="{{ i }}"
+                  data-bundle-value="{{ tile_bundle_value | escape }}"
+                  data-bag-price="{{ resolved_price }}"
+                  data-media-id="{{ tile_media_id }}"
+                >
+                  {%- if popular_tile_int == i -%}
+                    <span class="bundle-pdp__tile-badge">{{ section.settings.popular_label }}</span>
+                  {%- endif -%}
+                  <span class="bundle-pdp__tile-img" aria-hidden="true">
+                    {%- if tile_image -%}
+                      <img src="{{ tile_image | image_url: width: 200 }}" alt="" loading="lazy" width="80" height="80">
+                    {%- endif -%}
+                  </span>
+                  <span class="bundle-pdp__tile-label">{{ tile_label }}</span>
+                  <span class="bundle-pdp__tile-sub">{{ tile_sub }}</span>
+                  <span class="bundle-pdp__tile-price">
+                    {{ resolved_price | money }}
+                    {%- if savings_pct > 0 -%}
+                      <span class="bundle-pdp__tile-save">SAVE {{ savings_pct }}%</span>
+                    {%- endif -%}
+                  </span>
+                </button>
+              {%- endfor -%}
+            </div>
+          </div>
+
+          {%- if flavor_option_index >= 0 -%}
+            {%- assign flavor_option = product.options_with_values[flavor_option_index] -%}
+            <div class="bundle-pdp__flavors-section">
+              <p class="bundle-pdp__section-label">{{ section.settings.flavor_heading }}</p>
+              <div
+                class="bundle-pdp__bags"
+                data-flavor-option-index="{{ flavor_option_index }}"
+                data-bundle-option-index="{{ bundle_option_index }}"
+                data-single-bundle-value="{{ section.settings.single_bundle_value | escape }}"
+              >
+                {%- for i in (1..3) -%}
+                  {%- liquid
+                    case i
+                      when 1
+                        assign bag_bundle_value = section.settings.tile_1_bundle_value
+                      when 2
+                        assign bag_bundle_value = section.settings.tile_2_bundle_value
+                      when 3
+                        assign bag_bundle_value = section.settings.tile_3_bundle_value
+                    endcase
+
+                    assign bag_image = product.featured_image
+                    if product.metafields.custom.bundle_thumb != blank
+                      assign bag_image = product.metafields.custom.bundle_thumb.value
+                    elsif bundle_option_index >= 0
+                      for v in product.variants
+                        if v.options[bundle_option_index] == bag_bundle_value
+                          if v.featured_image
+                            assign bag_image = v.featured_image
+                          endif
+                          break
+                        endif
+                      endfor
+                    endif
+                  -%}
+                  <div class="bundle-pdp__bag-row" data-bag-index="{{ i }}">
+                    <span class="bundle-pdp__bag-label">{{ section.settings.bag_label_prefix }} {{ i }}</span>
+                    <span class="bundle-pdp__bag-thumb" aria-hidden="true">
+                      {%- if bag_image -%}
+                        <img src="{{ bag_image | image_url: width: 80 }}" alt="" loading="lazy" width="32" height="32">
+                      {%- endif -%}
+                    </span>
+                    <div class="bundle-pdp__flavor-options">
+                      {%- for value in flavor_option.values -%}
+                        <button
+                          type="button"
+                          class="bundle-pdp__flavor-pill{% if forloop.first %} is-selected{% endif %}"
+                          data-flavor-value="{{ value | escape }}"
+                          aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+                        >
+                          {{ value }}
+                        </button>
+                      {%- endfor -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+              <p class="bundle-pdp__mix-caption">
+                <span class="bundle-pdp__mix-icon" aria-hidden="true">
+                  {%- render 'bundle-pdp-icon',
+                    image: section.settings.mix_icon,
+                    url: section.settings.mix_icon_url,
+                    default: 'icon-3d-model.svg',
+                    width: 14, height: 14 -%}
+                </span>
+                {{ section.settings.mix_label }}
+              </p>
+            </div>
+          {%- endif -%}
+
+          {%- assign benefit_blocks = section.blocks | where: 'type', 'benefit' -%}
+          {%- if benefit_blocks.size > 0 -%}
+            <div class="bundle-pdp__benefits">
+              {%- for block in benefit_blocks -%}
+                <article class="bundle-pdp__benefit" {{ block.shopify_attributes }}>
+                  <span class="bundle-pdp__benefit-icon" aria-hidden="true">
+                    {%- if block.settings.icon != blank -%}
+                      <img src="{{ block.settings.icon | image_url: width: 80 }}" alt="" loading="lazy" width="40" height="40">
+                    {%- elsif block.settings.icon_url != blank -%}
+                      <img src="{{ block.settings.icon_url }}" alt="" loading="lazy" width="40" height="40">
+                    {%- endif -%}
+                  </span>
+                  <span class="bundle-pdp__benefit-label">{{ block.settings.label }}</span>
+                </article>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </section>
+      </div>
+
+      <div class="bundle-pdp__purchase">
+        <div class="bundle-pdp__purchase-card">
+          <h2 class="bundle-pdp__purchase-title">{{ section.settings.purchase_heading }}</h2>
+
+          <div class="bundle-pdp__form" data-section-id="{{ section.id }}">
+            <div class="product-form__error-message-wrapper" role="alert" hidden>
+              <span class="svg-wrapper">{{- 'icon-error.svg' | inline_asset_content -}}</span>
+              <span class="product-form__error-message"></span>
+            </div>
+
+            {%- form 'product', product, id: product_form_id, class: 'bundle-pdp__product-form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+              <input
+                type="hidden"
+                name="id"
+                value="{{ product.selected_or_first_available_variant.id }}"
+                class="product-variant-id"
+              >
+              <input type="hidden" name="quantity" value="1">
+              <input type="hidden" name="selling_plan" value="" id="BundleSellingPlan-{{ section.id }}" disabled>
+
+              {%- assign first_selling_plan_group = product.selling_plan_groups | first -%}
+              {%- assign has_selling_plans = false -%}
+              {%- if first_selling_plan_group and first_selling_plan_group.selling_plans.size > 0 -%}
+                {%- assign has_selling_plans = true -%}
+              {%- endif -%}
+
+              {%- assign discount_pct = 0 -%}
+              {%- if has_selling_plans -%}
+                {%- assign first_plan = first_selling_plan_group.selling_plans[0] -%}
+                {%- if first_plan.price_adjustments[0] and first_plan.price_adjustments[0].value_type == 'percentage' -%}
+                  {%- assign discount_pct = first_plan.price_adjustments[0].value -%}
+                {%- endif -%}
+              {%- endif -%}
+              {%- assign discount_factor = 100 | minus: discount_pct | divided_by: 100.0 -%}
+
+              {%- if has_selling_plans -%}
+
+               <label class="bundle-pdp__option bundle-pdp__option--onetime{% unless has_selling_plans %} is-selected{% endunless %}">
+                <input type="radio" name="bundle-purchase-mode" value="onetime" {% unless has_selling_plans %}checked{% endunless %}>
+                <span class="bundle-pdp__option-radio" aria-hidden="true"></span>
+                <span class="bundle-pdp__option-body">
+                  <span class="bundle-pdp__option-row">
+                    <span class="bundle-pdp__option-title">{{ section.settings.onetime_title }}</span>
+                    <span class="bundle-pdp__option-price" data-onetime-price>{{ product.selected_or_first_available_variant.price | money }}</span>
+                  </span>
+                </span>
+              </label>
+              
+                <label
+                  class="bundle-pdp__option bundle-pdp__option--subscribe is-selected"
+                  data-subscribe-discount-pct="{{ discount_pct }}"
+                >
+                  <input
+                    type="radio"
+                    name="bundle-purchase-mode"
+                    value="subscribe"
+                    data-selling-plan-id="{{ first_selling_plan_group.selling_plans[0].id }}"
+                    checked
+                  >
+                  <span class="bundle-pdp__option-radio" aria-hidden="true"></span>
+                  <span class="bundle-pdp__option-body">
+                    <span class="bundle-pdp__option-row">
+                      <span class="bundle-pdp__option-title">
+                        {{ section.settings.subscribe_title }}
+                        {%- if discount_pct > 0 %} {{ discount_pct }}%{%- endif -%}
+                      </span>
+                      <span class="bundle-pdp__option-tag">{{ section.settings.subscribe_tag }}</span>
+                    </span>
+                    <span class="bundle-pdp__option-meta">
+                      <select class="bundle-pdp__frequency" aria-label="Delivery frequency" data-selling-plan-select>
+                        {%- for plan in first_selling_plan_group.selling_plans -%}
+                          <option value="{{ plan.id }}">{{ plan.name }}</option>
+                        {%- endfor -%}
+                      </select>
+                      <span class="bundle-pdp__option-price">
+                        <span data-subscribe-price>{{ product.selected_or_first_available_variant.price | times: discount_factor | round | money }}</span>
+                        <s data-subscribe-compare>{{ product.selected_or_first_available_variant.price | money }}</s>
+                      </span>
+                    </span>
+                  </span>
+                </label>
+
+                <div class="bundle-pdp__perks">
+                  <span class="bundle-pdp__perk">
+                    <span class="bundle-pdp__perk-icon" aria-hidden="true">
+                      {%- render 'bundle-pdp-icon',
+                        image: section.settings.perk_cancel_icon,
+                        url: section.settings.perk_cancel_icon_url,
+                        default: 'icon-reset.svg' -%}
+                    </span>
+                    {{ section.settings.perk_cancel }}
+                  </span>
+                  <span class="bundle-pdp__perk">
+                    <span class="bundle-pdp__perk-icon" aria-hidden="true">
+                      {%- render 'bundle-pdp-icon',
+                        image: section.settings.perk_skip_icon,
+                        url: section.settings.perk_skip_icon_url,
+                        default: 'icon-stopwatch.svg' -%}
+                    </span>
+                    {{ section.settings.perk_skip }}
+                  </span>
+                  <span class="bundle-pdp__perk">
+                    <span class="bundle-pdp__perk-icon" aria-hidden="true">
+                      {%- render 'bundle-pdp-icon',
+                        image: section.settings.perk_shipping_icon,
+                        url: section.settings.perk_shipping_icon_url,
+                        default: 'icon-truck.svg' -%}
+                    </span>
+                    {{ section.settings.perk_shipping }}
+                  </span>
+                </div>
+              {%- endif -%}
+
+             
+
+              <div class="bundle-pdp__trust">
+                <span class="bundle-pdp__trust-item">
+                  <span class="bundle-pdp__trust-icon" aria-hidden="true">
+                    {%- render 'bundle-pdp-icon',
+                      image: section.settings.trust_ships_icon,
+                      url: section.settings.trust_ships_icon_url,
+                      default: 'icon-box.svg' -%}
+                  </span>
+                  {{ section.settings.trust_ships }}
+                </span>
+                <span class="bundle-pdp__trust-item">
+                  <span class="bundle-pdp__trust-icon" aria-hidden="true">
+                    {%- render 'bundle-pdp-icon',
+                      image: section.settings.trust_secure_icon,
+                      url: section.settings.trust_secure_icon_url,
+                      default: 'icon-padlock.svg' -%}
+                  </span>
+                  {{ section.settings.trust_secure }}
+                </span>
+                <span class="bundle-pdp__trust-item">
+                  <span class="bundle-pdp__trust-icon" aria-hidden="true">
+                    {%- render 'bundle-pdp-icon',
+                      image: section.settings.trust_founder_icon,
+                      url: section.settings.trust_founder_icon_url,
+                      default: 'icon-star.svg' -%}
+                  </span>
+                  {{ section.settings.trust_founder }}
+                </span>
+              </div>
+
+              <div class="bundle-pdp__submit-flex-shipping">
+              <button
+                id="BundleSubmitButton-{{ section.id }}"
+                type="submit"
+                name="add"
+                class="bundle-pdp__submit"
+                {% if product.selected_or_first_available_variant.available == false or product.selected_or_first_available_variant == null %}disabled{% endif %}
+              >
+                <span class="bundle-pdp__submit-price">
+                  <strong data-total-price>{{ product.selected_or_first_available_variant.price | money }}</strong>
+                  <span data-total-meta>({{ section.settings.default_tile }} bags)</span>
+                </span>
+                <span class="bundle-pdp__submit-divider" aria-hidden="true"></span>
+                <span class="bundle-pdp__submit-label">
+                  {%- if product.selected_or_first_available_variant == null -%}
+                    {{ 'products.product.unavailable' | t }}
+                  {%- elsif product.selected_or_first_available_variant.available == false -%}
+                    {{ 'products.product.sold_out' | t }}
+                  {%- else -%}
+                    {{ 'products.product.add_to_cart' | t }}
+                  {%- endif -%}
+                </span>
+                {%- render 'loading-spinner' -%}
+              </button>
+
+              <p class="bundle-pdp__shipping-note">{{ section.settings.shipping_note }}</p>
+            </div>
+            {%- endform -%}
+          </div>
+
+          <div class="bundle-pdp__guarantee">
+            <span class="bundle-pdp__guarantee-icon" aria-hidden="true">
+              {%- render 'bundle-pdp-icon',
+                image: section.settings.guarantee_icon,
+                url: section.settings.guarantee_icon_url,
+                default: 'icon-success.svg',
+                width: 24, height: 24 -%}
+            </span>
+            <div>
+              <p class="bundle-pdp__guarantee-title">{{ section.settings.guarantee_title }}</p>
+              <p class="bundle-pdp__guarantee-text">{{ section.settings.guarantee_text }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bundle-pdp__sticky-cta" data-bundle-sticky-cta aria-hidden="true">
+      <button
+        type="button"
+        class="bundle-pdp__submit bundle-pdp__sticky-submit"
+        data-bundle-sticky-submit
+        aria-label="{{ 'products.product.add_to_cart' | t }}"
+        {% if product.selected_or_first_available_variant.available == false or product.selected_or_first_available_variant == null %}disabled{% endif %}
+      >
+        <span class="bundle-pdp__submit-price">
+          <strong data-total-price>{{ product.selected_or_first_available_variant.price | money }}</strong>
+          <span data-total-meta>({{ section.settings.default_tile }} bags)</span>
+        </span>
+        <span class="bundle-pdp__submit-divider" aria-hidden="true"></span>
+        <span class="bundle-pdp__submit-label">
+          {%- if product.selected_or_first_available_variant == null -%}
+            {{ 'products.product.unavailable' | t }}
+          {%- elsif product.selected_or_first_available_variant.available == false -%}
+            {{ 'products.product.sold_out' | t }}
+          {%- else -%}
+            {{ 'products.product.add_to_cart' | t }}
+          {%- endif -%}
+        </span>
+      </button>
+    </div>
+
+    <script type="application/json" data-bundle-product-variants>
+      {{ product.variants | json }}
+    </script>
+
+    {% render 'product-media-modal', variant_images: variant_images %}
+
+    {%- if product.media.size > 0 -%}
+      <script src="{{ 'product-modal.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'media-gallery.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+
+    <script type="application/ld+json">
+      {{ product | structured_data }}
+    </script>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Bundle Product",
+  "tag": "section",
+  "class": "section section-bundle-pdp",
+  "blocks": [
+    { "type": "@app" },
+    { "type": "title", "name": "Title", "limit": 1 },
+    { "type": "description", "name": "Description", "limit": 1 },
+    { "type": "price", "name": "Price", "limit": 1 },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        { "type": "inline_richtext", "id": "text", "default": "Text", "label": "Text" },
+        {
+          "type": "select",
+          "id": "text_style",
+          "options": [
+            { "value": "body", "label": "Body" },
+            { "value": "subtitle", "label": "Subtitle" },
+            { "value": "uppercase", "label": "Uppercase" }
+          ],
+          "default": "body",
+          "label": "Style"
+        }
+      ]
+    },
+    { "type": "share", "name": "Share", "limit": 1, "settings": [
+      { "type": "text", "id": "share_label", "label": "Share label", "default": "Share" }
+    ]},
+    {
+      "type": "custom_liquid",
+      "name": "Custom liquid",
+      "settings": [
+        { "type": "liquid", "id": "custom_liquid", "label": "Custom liquid" }
+      ]
+    },
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        { "type": "image_picker", "id": "icon", "label": "Icon" },
+        { "type": "url", "id": "icon_url", "label": "Icon URL (fallback if no image)", "info": "Used only if Icon image picker is empty." },
+        { "type": "text", "id": "label", "label": "Label", "default": "Benefit" }
+      ]
+    }
+  ],
+  "settings": [
+    { "type": "header", "content": "Brand" },
+    { "type": "text", "id": "brand_label", "label": "Brand label", "default": "Liquid Labs" },
+
+    { "type": "header", "content": "Variant mapping" },
+    { "type": "text", "id": "bundle_option_name", "label": "Bundle option name", "default": "Bundle & Save", "info": "Must match the product option that holds bundle values (Single/Duo/Trio)." },
+    { "type": "text", "id": "single_bundle_value", "label": "Single-bag bundle value", "default": "Single", "info": "Used for mix-and-match: each bag is added as this bundle value when flavors differ." },
+
+    { "type": "header", "content": "Quantity tiles" },
+    { "type": "text", "id": "quantity_heading", "label": "Heading", "default": "Choose Quantity" },
+    { "type": "text", "id": "popular_label", "label": "Popular badge text", "default": "MOST POPULAR" },
+    {
+      "type": "select",
+      "id": "popular_tile",
+      "label": "Which tile gets the badge",
+      "options": [
+        { "value": "1", "label": "Tile 1" },
+        { "value": "2", "label": "Tile 2" },
+        { "value": "3", "label": "Tile 3" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "select",
+      "id": "default_tile",
+      "label": "Default selected tile",
+      "options": [
+        { "value": "1", "label": "Tile 1" },
+        { "value": "2", "label": "Tile 2" },
+        { "value": "3", "label": "Tile 3" }
+      ],
+      "default": "3"
+    },
+    { "type": "text", "id": "tile_1_label", "label": "Tile 1 label", "default": "1 Bag" },
+    { "type": "text", "id": "tile_1_sub", "label": "Tile 1 subtitle", "default": "15 Sticks" },
+    { "type": "text", "id": "tile_1_bundle_value", "label": "Tile 1 bundle value", "default": "Single" },
+    { "type": "number", "id": "tile_1_price", "label": "Tile 1 fallback price (cents)", "default": 2400, "info": "Only used if no variant matches the bundle value above." },
+    { "type": "text", "id": "tile_2_label", "label": "Tile 2 label", "default": "2 Bags" },
+    { "type": "text", "id": "tile_2_sub", "label": "Tile 2 subtitle", "default": "30 Sticks" },
+    { "type": "text", "id": "tile_2_bundle_value", "label": "Tile 2 bundle value", "default": "Duo" },
+    { "type": "number", "id": "tile_2_price", "label": "Tile 2 fallback price (cents)", "default": 4000 },
+    { "type": "text", "id": "tile_3_label", "label": "Tile 3 label", "default": "3 Bags" },
+    { "type": "text", "id": "tile_3_sub", "label": "Tile 3 subtitle", "default": "45 Sticks" },
+    { "type": "text", "id": "tile_3_bundle_value", "label": "Tile 3 bundle value", "default": "Trio" },
+    { "type": "number", "id": "tile_3_price", "label": "Tile 3 fallback price (cents)", "default": 5600 },
+
+    { "type": "header", "content": "Flavor pickers" },
+    { "type": "text", "id": "flavor_heading", "label": "Heading", "default": "Select Your Flavors" },
+    { "type": "text", "id": "bag_label_prefix", "label": "Bag label prefix", "default": "Bag" },
+    { "type": "text", "id": "mix_label", "label": "Mix-and-match label", "default": "Mix and match your way!" },
+    { "type": "image_picker", "id": "mix_icon", "label": "Mix-and-match icon" },
+    { "type": "url", "id": "mix_icon_url", "label": "Mix-and-match icon URL (fallback)", "info": "Used only if the icon picker is empty. Leave both blank to use the default sparkle icon." },
+
+    { "type": "header", "content": "Purchase options" },
+    { "type": "text", "id": "purchase_heading", "label": "Heading", "default": "Purchase Options" },
+    { "type": "text", "id": "subscribe_title", "label": "Subscribe title", "default": "Subscribe & Save", "info": "The discount percent (from your selling plan) is appended automatically." },
+    { "type": "text", "id": "subscribe_tag", "label": "Subscribe tag", "default": "BEST VALUE" },
+    { "type": "text", "id": "onetime_title", "label": "One-time title", "default": "One-Time Purchase" },
+    { "type": "text", "id": "perk_cancel", "label": "Perk 1 label", "default": "Cancel anytime" },
+    { "type": "image_picker", "id": "perk_cancel_icon", "label": "Perk 1 icon" },
+    { "type": "url", "id": "perk_cancel_icon_url", "label": "Perk 1 icon URL (fallback)" },
+    { "type": "text", "id": "perk_skip", "label": "Perk 2 label", "default": "Skip or pause anytime" },
+    { "type": "image_picker", "id": "perk_skip_icon", "label": "Perk 2 icon" },
+    { "type": "url", "id": "perk_skip_icon_url", "label": "Perk 2 icon URL (fallback)" },
+    { "type": "text", "id": "perk_shipping", "label": "Perk 3 label", "default": "Free shipping on subscriptions" },
+    { "type": "image_picker", "id": "perk_shipping_icon", "label": "Perk 3 icon" },
+    { "type": "url", "id": "perk_shipping_icon_url", "label": "Perk 3 icon URL (fallback)" },
+    { "type": "text", "id": "trust_ships", "label": "Trust 1 label", "default": "Ships in 4-6 weeks" },
+    { "type": "image_picker", "id": "trust_ships_icon", "label": "Trust 1 icon" },
+    { "type": "url", "id": "trust_ships_icon_url", "label": "Trust 1 icon URL (fallback)" },
+    { "type": "text", "id": "trust_secure", "label": "Trust 2 label", "default": "Secure checkout" },
+    { "type": "image_picker", "id": "trust_secure_icon", "label": "Trust 2 icon" },
+    { "type": "url", "id": "trust_secure_icon_url", "label": "Trust 2 icon URL (fallback)" },
+    { "type": "text", "id": "trust_founder", "label": "Trust 3 label", "default": "Founder pricing" },
+    { "type": "image_picker", "id": "trust_founder_icon", "label": "Trust 3 icon" },
+    { "type": "url", "id": "trust_founder_icon_url", "label": "Trust 3 icon URL (fallback)" },
+    { "type": "text", "id": "shipping_note", "label": "Shipping note", "default": "Free shipping on orders over $x" },
+    { "type": "image_picker", "id": "guarantee_icon", "label": "Guarantee icon" },
+    { "type": "url", "id": "guarantee_icon_url", "label": "Guarantee icon URL (fallback)", "info": "Used only if the icon picker is empty. Leave both blank to use the default check icon." },
+    { "type": "text", "id": "guarantee_title", "label": "Guarantee title", "default": "30-Day Satisfaction Guarantee" },
+    { "type": "text", "id": "guarantee_text", "label": "Guarantee text", "default": "Not satisfied? We'll make it right." },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-1" },
+    { "type": "checkbox", "id": "enable_sticky_info", "default": true, "label": "t:sections.main-product.settings.enable_sticky_info.label" },
+    { "type": "checkbox", "id": "hide_slider_buttons_mobile", "label": "Hide slider buttons on mobile", "default": false },
+    { "type": "checkbox", "id": "show_title_at_top", "default": false, "label": "Show title above product layout" },
+    { "type": "checkbox", "id": "skip_cart", "default": true, "label": "Skip cart page on add to cart", "info": "When on, customers go straight to checkout after adding. When off, they land on the cart page." },
+    { "type": "checkbox", "id": "lock_gallery_image", "default": false, "label": "Lock gallery image on variant change", "info": "When on, selecting a quantity tile does not change the main gallery image (applies on both desktop and mobile)." },
+
+    { "type": "header", "content": "t:sections.main-product.settings.header.content" },
+    {
+      "type": "select",
+      "id": "media_size",
+      "options": [
+        { "value": "small",  "label": "t:sections.main-product.settings.media_size.options__1.label" },
+        { "value": "medium", "label": "t:sections.main-product.settings.media_size.options__2.label" },
+        { "value": "large",  "label": "t:sections.main-product.settings.media_size.options__3.label" }
+      ],
+      "default": "large",
+      "label": "t:sections.main-product.settings.media_size.label"
+    },
+    {
+      "type": "select",
+      "id": "gallery_layout",
+      "options": [
+        { "value": "stacked", "label": "t:sections.main-product.settings.gallery_layout.options__1.label" },
+        { "value": "columns", "label": "t:sections.main-product.settings.gallery_layout.options__2.label" },
+        { "value": "thumbnail", "label": "t:sections.main-product.settings.gallery_layout.options__3.label" },
+        { "value": "thumbnail_slider", "label": "t:sections.main-product.settings.gallery_layout.options__4.label" }
+      ],
+      "default": "thumbnail",
+      "label": "t:sections.main-product.settings.gallery_layout.label"
+    },
+    {
+      "type": "select",
+      "id": "mobile_thumbnails",
+      "options": [
+        { "value": "columns", "label": "t:sections.main-product.settings.mobile_thumbnails.options__1.label" },
+        { "value": "show", "label": "t:sections.main-product.settings.mobile_thumbnails.options__2.label" },
+        { "value": "hide", "label": "t:sections.main-product.settings.mobile_thumbnails.options__3.label" }
+      ],
+      "default": "show",
+      "label": "t:sections.main-product.settings.mobile_thumbnails.label"
+    },
+    {
+      "type": "select",
+      "id": "image_zoom",
+      "options": [
+        { "value": "lightbox", "label": "t:sections.main-product.settings.image_zoom.options__1.label" },
+        { "value": "hover", "label": "t:sections.main-product.settings.image_zoom.options__2.label" },
+        { "value": "none", "label": "t:sections.main-product.settings.image_zoom.options__3.label" }
+      ],
+      "default": "lightbox",
+      "label": "t:sections.main-product.settings.image_zoom.label"
+    },
+    { "type": "checkbox", "id": "hide_variants", "default": true, "label": "t:sections.main-product.settings.hide_variants.label" },
+    { "type": "checkbox", "id": "enable_video_looping", "default": false, "label": "t:sections.main-product.settings.enable_video_looping.label" },
+
+    { "type": "header", "content": "t:sections.all.padding.section_padding_heading" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_top", "default": 36 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "t:sections.all.padding.padding_bottom", "default": 36 }
+  ],
+  "presets": [
+    { "name": "Bundle Product" }
+  ]
+}
+{% endschema %}

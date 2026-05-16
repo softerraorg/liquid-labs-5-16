@@ -1,0 +1,25 @@
+{%- comment -%}
+  Renders a Bundle PDP icon with image_picker / URL fallback / default SVG.
+
+  Accepts:
+  - image: image_picker setting value
+  - url: URL setting value (string)
+  - default: default SVG filename in assets (e.g. 'icon-reset.svg')
+  - width: img width attr (default 32)
+  - height: img height attr (default 32)
+
+  Usage:
+  {% render 'bundle-pdp-icon',
+       image: section.settings.perk_cancel_icon,
+       url: section.settings.perk_cancel_icon_url,
+       default: 'icon-reset.svg' %}
+{%- endcomment -%}
+{%- assign _w = width | default: 32 -%}
+{%- assign _h = height | default: 32 -%}
+{%- if image != blank -%}
+  <img src="{{ image | image_url: width: 80 }}" alt="" loading="lazy" width="{{ _w }}" height="{{ _h }}">
+{%- elsif url != blank -%}
+  <img src="{{ url }}" alt="" loading="lazy" width="{{ _w }}" height="{{ _h }}">
+{%- else -%}
+  {{- default | inline_asset_content -}}
+{%- endif -%}

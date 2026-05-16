@@ -1,0 +1,632 @@
+{% style %}
+  .ll-inside-each-stick {
+    background: {{ section.settings.background_color }};
+    color: {{ section.settings.text_color }};
+    padding-top: {{ section.settings.padding_top_desktop }}px;
+    padding-bottom: {{ section.settings.padding_bottom_desktop }}px;
+  }
+
+  .ll-inside-each-stick__top {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .ll-inside-each-stick__left,
+  .ll-inside-each-stick__right {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .ll-inside-each-stick__table {
+    table-layout: fixed;
+  }
+
+  /* ── LEFT COLUMN ── */
+  .ll-inside-each-stick__heading {
+       font-size: 40px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.82px;
+   margin: 0 0 40px 0;
+    color: {{ section.settings.heading_color }};
+  }
+
+ 
+
+  .ll-inside-each-stick__intro {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 30px;
+    margin: 0 0 32px 0;
+    color: {{ section.settings.text_color }};
+  }
+
+  .ll-inside-each-stick__intro p {
+    margin: 0 0 0.5em;
+  }
+  .ll-inside-each-stick__intro p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Nutrition table */
+  .ll-inside-each-stick__table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .ll-inside-each-stick__table td {
+    padding: 18px 4px;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 30px;
+    border-bottom: 1px solid #d8dadd;
+  }
+
+  .ll-inside-each-stick__table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .ll-inside-each-stick__table td:first-child {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: {{ section.settings.table_label_color }};
+  }
+
+  .ll-inside-each-stick__table td:last-child {
+    text-align: right;
+    color: {{ section.settings.table_value_color }};
+  }
+
+  /* ── RIGHT COLUMN (stats with connecting line) ── */
+  .ll-inside-each-stick__stats {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  .ll-inside-each-stick__stat {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 24px;
+    align-items: start;
+    position: relative;
+  }
+
+  .ll-inside-each-stick__stat-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+     display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ll-inside-each-stick__stat-icon img,
+  .ll-inside-each-stick__stat-icon svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Vertical connecting line between stat icons */
+  .ll-inside-each-stick__stat:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 32px;
+    top: 64px;
+    width: 2px;
+    height: calc(100% + 36px - 64px);
+    background: #d8dde4;
+  }
+
+  .ll-inside-each-stick__stat-label {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin: 8px 0 12px;
+  }
+
+  .ll-inside-each-stick__stat-values {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 30px;
+    margin: 0 0 12px;
+    color: {{ section.settings.text_color }};
+  }
+  .ll-inside-each-stick__stat-values p {
+    margin: 0;
+  }
+
+.ll-inside-each-stick__stat-caption {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 18px;
+    margin: 0;
+    color: #7d828d;
+}
+  .ll-inside-each-stick__stat-caption p {
+    margin: 0;
+  }
+
+  /* ── BOTTOM FEATURES ROW ── */
+  .ll-inside-each-stick__features {
+    display: grid;
+    grid-template-columns: repeat({{ section.blocks | where: 'type', 'feature' | size | at_least: 1 | at_most: 4 }}, minmax(0, 1fr));
+    gap: 32px;
+    margin-top: 64px;
+    padding-top: 48px;
+    border-top: 1px solid #e3e5ea;
+  }
+
+  .ll-inside-each-stick__feature {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 18px;
+    align-items: center;
+  }
+
+  .ll-inside-each-stick__feature-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #f1f5fd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ll-inside-each-stick__feature-icon img,
+  .ll-inside-each-stick__feature-icon svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .ll-inside-each-stick__feature-title {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin: 0 0 6px;
+    color: {{ section.settings.heading_color }};
+  }
+
+.ll-inside-each-stick__feature-text {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 18px;
+    margin: 0;
+    color: #7d828d;
+}
+  .ll-inside-each-stick__feature-text p {
+    margin: 0;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media screen and (max-width: 989px) {
+    .ll-inside-each-stick__top {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .ll-inside-each-stick__features { 
+      gap: 20px;
+    }
+    .ll-inside-each-stick__feature {
+    display: flex; 
+    flex-direction: column;
+}
+.ll-inside-each-stick__stats { 
+    flex-direction: row;
+ }
+ .ll-inside-each-stick__stat {
+    display: flex;
+    flex-direction: column;
+     align-items: center;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(17, 24, 39, 0.08);
+    padding: 28px 18px;
+    text-align: center;
+}
+.ll-inside-each-stick__stat:not(:last-child)::before{
+    display:none;
+}
+.ll-inside-each-stick__stat-label {
+    text-align: center;
+}
+.ll-inside-each-stick__stat-values,
+.ll-inside-each-stick__stat-caption {
+    text-align: center;
+}
+  }
+
+  @media screen and (max-width: 749px) {
+    .ll-inside-each-stick {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    }
+    .ll-inside-each-stick__intro {
+      margin-bottom: 24px;
+    }
+     .ll-inside-each-stick__heading {
+       font-size: 28px; 
+   margin: 0 0 15px 0; 
+  }
+    .ll-inside-each-stick__table td {
+      padding: 14px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .ll-inside-each-stick__top {
+      gap: 32px;
+    }
+    .ll-inside-each-stick__stats {
+      gap: 12px;
+    }
+    .ll-inside-each-stick__stat {
+      grid-template-columns: 56px 1fr;
+      gap: 16px;
+    }
+    .ll-inside-each-stick__stat-icon {
+      width: 52px;
+      height: 52px;
+    }
+    .ll-inside-each-stick__stat:not(:last-child)::before {
+      left: 26px;
+      top: 52px;
+      height: calc(100% + 28px - 52px);
+    }
+.ll-inside-each-stick__stat-label {
+    font-size: 12px;
+    margin-top: 4px;
+}
+    .ll-inside-each-stick__stat-values {
+      font-size: 12px;
+      line-height: 1.4;
+    }
+.ll-inside-each-stick__stat-caption {
+    font-size: 11px;
+    line-height: 1.3;
+    text-align: center;
+}
+.ll-inside-each-stick__feature-title {
+    font-size: 14px;
+    text-align: center;
+}
+    .ll-inside-each-stick__feature-text {
+      font-size: 12px;
+      line-height: 1.4;
+          text-align: center;
+    }
+.ll-inside-each-stick__features {
+    margin-top: 30px;
+    padding-top: 24px;
+}
+    .ll-inside-each-stick__feature {
+       gap: 14px;
+    }
+    .ll-inside-each-stick__feature-icon {
+      width: 48px;
+      height: 48px;
+    }
+  }
+{% endstyle %}
+
+<div class="ll-inside-each-stick">
+  <div class="page-width">
+
+    <div class="ll-inside-each-stick__top">
+
+      {%- comment -%} ── LEFT COLUMN ── {%- endcomment -%}
+      <div class="ll-inside-each-stick__left">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="ll-inside-each-stick__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.intro != blank -%}
+          <div class="ll-inside-each-stick__intro rte">{{ section.settings.intro }}</div>
+        {%- endif -%}
+
+        {%- assign nutrition_rows = section.blocks | where: 'type', 'nutrition_row' -%}
+        {%- if nutrition_rows.size > 0 -%}
+          <table class="ll-inside-each-stick__table">
+            <tbody>
+              {%- for block in nutrition_rows -%}
+                <tr {{ block.shopify_attributes }}>
+                  <td>{{ block.settings.name }}</td>
+                  <td>{{ block.settings.amount }}</td>
+                </tr>
+              {%- endfor -%}
+            </tbody>
+          </table>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} ── RIGHT COLUMN ── {%- endcomment -%}
+      <div class="ll-inside-each-stick__right">
+        {%- assign stat_blocks = section.blocks | where: 'type', 'stat' -%}
+        {%- if stat_blocks.size > 0 -%}
+          <div class="ll-inside-each-stick__stats">
+            {%- for block in stat_blocks -%}
+              <div class="ll-inside-each-stick__stat" {{ block.shopify_attributes }}>
+                <div
+                  class="ll-inside-each-stick__stat-icon"
+                >
+                  {%- if block.settings.icon != blank -%}
+                    {{ block.settings.icon | image_url: width: 120 | image_tag:
+                      loading: 'lazy',
+                      alt: block.settings.label | escape
+                    }}
+                  {%- endif -%}
+                </div>
+                <div class="ll-inside-each-stick__stat-body">
+                  {%- if block.settings.label != blank -%}
+                    <h3
+                      class="ll-inside-each-stick__stat-label"
+                      style="color: {{ block.settings.label_color }} !important;"
+                    >{{ block.settings.label }}</h3>
+                  {%- endif -%}
+                  {%- if block.settings.values != blank -%}
+                    <div class="ll-inside-each-stick__stat-values rte">{{ block.settings.values }}</div>
+                  {%- endif -%}
+                  {%- if block.settings.caption != blank -%}
+                    <div class="ll-inside-each-stick__stat-caption rte">{{ block.settings.caption }}</div>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+    </div>
+
+    {%- comment -%} ── BOTTOM FEATURES ROW ── {%- endcomment -%}
+    {%- assign feature_blocks = section.blocks | where: 'type', 'feature' -%}
+    {%- if feature_blocks.size > 0 -%}
+      <div class="ll-inside-each-stick__features">
+        {%- for block in feature_blocks -%}
+          <div class="ll-inside-each-stick__feature" {{ block.shopify_attributes }}>
+            <div
+              class="ll-inside-each-stick__feature-icon"
+            >
+              {%- if block.settings.icon != blank -%}
+                {{ block.settings.icon | image_url: width: 120 | image_tag:
+                  loading: 'lazy',
+                  alt: block.settings.title | escape
+                }}
+              {%- endif -%}
+            </div>
+            <div class="ll-inside-each-stick__feature-body">
+              {%- if block.settings.title != blank -%}
+                <h4 class="ll-inside-each-stick__feature-title">{{ block.settings.title }}</h4>
+              {%- endif -%}
+              {%- if block.settings.text != blank -%}
+                <div class="ll-inside-each-stick__feature-text rte">{{ block.settings.text }}</div>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "LL Inside Each Stick",
+  "tag": "section",
+  "class": "ll-inside-each-stick-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What's inside each stick"
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "Intro paragraph",
+      "default": "<p>Each stick delivers 5g of creatine monohydrate plus key electrolytes to support strength, hydration, and recovery — without the mess of traditional powders.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#292d36"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text color",
+      "default": "#4e5053"
+    },
+    {
+      "type": "color",
+      "id": "table_label_color",
+      "label": "Nutrition table — label color",
+      "default": "#4a4b4e"
+    },
+    {
+      "type": "color",
+      "id": "table_value_color",
+      "label": "Nutrition table — value color",
+      "default": "#525558"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "nutrition_row",
+      "name": "Nutrition row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Ingredient name",
+          "default": "CREATINE MONOHYDRATE"
+        },
+        {
+          "type": "text",
+          "id": "amount",
+          "label": "Amount",
+          "default": "5g"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "name": "Stat group",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon"
+        },
+   
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "PERFORMANCE"
+        },
+        {
+          "type": "color",
+          "id": "label_color",
+          "label": "Label color",
+          "default": "#3754b5"
+        },
+        {
+          "type": "richtext",
+          "id": "values",
+          "label": "Values",
+          "info": "One value per line, e.g. Creatine Monohydrate — 5g",
+          "default": "<p>Creatine Monohydrate — 5g</p>"
+        },
+        {
+          "type": "richtext",
+          "id": "caption",
+          "label": "Caption",
+          "default": "<p>Supports strength, power and muscle recovery.</p>"
+        }
+      ]
+    },
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon"
+        },
+     
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Mixes Instantly"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Description",
+          "default": "<p>No clumps. No hassle.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LL Inside Each Stick",
+      "category": "Custom",
+      "blocks": [
+        { "type": "nutrition_row", "settings": { "name": "CREATINE MONOHYDRATE", "amount": "5g" } },
+        { "type": "nutrition_row", "settings": { "name": "CALORIES", "amount": "0g" } },
+        { "type": "nutrition_row", "settings": { "name": "SUGAR", "amount": "0g" } },
+        { "type": "nutrition_row", "settings": { "name": "SODIUM", "amount": "150mg" } },
+        { "type": "nutrition_row", "settings": { "name": "POTASSIUM", "amount": "150mg" } },
+        { "type": "nutrition_row", "settings": { "name": "MAGNESIUM", "amount": "35mg" } },
+        { "type": "stat", "settings": { "label": "PERFORMANCE", "label_color": "#3754b5", "values": "<p>Creatine Monohydrate-5g</p>", "caption": "<p>Supports strength, power and muscle recovery.</p>" } },
+        { "type": "stat", "settings": { "label": "HYDRATION", "label_color": "#3c59b9", "values": "<p>Sodium-150mg</p><p>Potassium-150mg</p><p>Magnesium-35mg</p>", "caption": "<p>Helps maintain fluid balance and support hydration.</p>" } },
+        { "type": "stat", "settings": { "label": "CLEAN FORMULA", "label_color": "#3ea56e", "values": "<p>Sugar — 0g</p><p>Calories — 0g</p>", "caption": "<p>Zero sugar. Zero calories. Nothing unnecessary.</p>" } },
+        { "type": "feature", "settings": { "title": "Mixes Instantly", "text": "<p>No clumps. No hassle.</p>" } },
+        { "type": "feature", "settings": { "title": "Travel Friendly", "text": "<p>Take it anywhere.</p>" } },
+        { "type": "feature", "settings": { "title": "Zero Sugar", "text": "<p>Clean performance you can trust.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,516 @@
+{% style %}
+  .ll-accordion-img {
+    background: {{ section.settings.section_bg_color }};
+    padding-top: {{ section.settings.padding_top_desktop }}px;
+    padding-bottom: {{ section.settings.padding_bottom_desktop }}px;
+  }
+
+  .ll-accordion-img__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 72px;
+    align-items: center;
+  }
+
+  /* ── LEFT COLUMN ── */
+  .ll-accordion-img__left {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .ll-accordion-img__heading {
+      font-size: 40px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.82px;
+    color: {{ section.settings.heading_color }};
+    margin: 0;
+  }
+  .ll-accordion-img__heading p {
+    margin: 0 0 15px;
+  }
+  .ll-accordion-img__heading p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media screen and (min-width: 769px) {
+    .ll-accordion-img__heading {
+      font-size: 40px;
+    }
+    .ll-accordion-img__heading p {
+      margin: 0 0 24px;
+    }
+  }
+
+  .ll-accordion-img__accordion {
+    background: {{ section.settings.accordion_bg_color }};
+    border-radius: 8px;
+    padding: 24px 32px;
+    max-width: 530px;
+  }
+
+  .ll-accordion-img__row + .ll-accordion-img__row {
+    border-top: 1px solid {{ section.settings.divider_color }};
+  }
+
+  .ll-accordion-img__trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 18px 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    color: {{ section.settings.row_label_color }};
+  }
+
+  .ll-accordion-img__trigger-label {
+    font-style: normal;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: -0.6px;
+  }
+
+  .ll-accordion-img__icon {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid {{ section.settings.icon_border_color }};
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+    background:{{ section.settings.icon_border_color }};
+  }
+  .ll-accordion-img__icon::before,
+  .ll-accordion-img__icon::after {
+    content: '';
+    position: absolute;
+    background: {{ section.settings.icon_color }};
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .ll-accordion-img__icon::before {
+    width: 10px;
+    height: 1.5px;
+  }
+  .ll-accordion-img__icon::after {
+    width: 1.5px;
+    height: 10px;
+    transition: transform 0.25s ease;
+  }
+  .ll-accordion-img__row.is-open .ll-accordion-img__icon::after {
+    transform: translate(-50%, -50%) scaleY(0);
+  }
+
+  .ll-accordion-img__body {
+    overflow: hidden;
+    height: 0;
+    transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ll-accordion-img__body.is-open {
+    height: auto;
+  }
+  .ll-accordion-img__body-inner {
+    padding: 0 0 18px;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 30px;
+    color: {{ section.settings.row_body_color }};
+  }
+  .ll-accordion-img__body-inner p {
+    margin: 0 0 0.6em;
+  }
+  .ll-accordion-img__body-inner p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ── RIGHT COLUMN ── */
+  .ll-accordion-img__right {
+    background: {{ section.settings.image_bg_color }};
+    border-radius: {{ section.settings.image_radius }}px;
+    padding: {{ section.settings.image_padding }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .ll-accordion-img__image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .ll-accordion-img__image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 0, 0, 0.25);
+  }
+  .ll-accordion-img__image-placeholder svg {
+    width: 60%;
+    height: 60%;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media screen and (max-width: 989px) {
+    .ll-accordion-img__grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+.ll-accordion-img__accordion {
+    max-width: 100%;
+    padding: 0;
+}
+  }
+
+  @media screen and (max-width: 749px) {
+    .ll-accordion-img__heading{
+       font-size: 28px;
+    }
+
+    .ll-accordion-img {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    } 
+    .ll-accordion-img__trigger {
+      padding: 14px 0;
+    }
+    .ll-accordion-img__trigger-label {
+      font-size: 16px;
+    }
+    .ll-accordion-img__body-inner {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    {%- if section.settings.image_flip_on_mobile -%}
+      .ll-accordion-img__grid {
+        display: flex;
+        flex-direction: column;
+      }
+      .ll-accordion-img__right {
+        order: -1;
+      }
+    {%- endif -%}
+  }
+{% endstyle %}
+
+<div class="ll-accordion-img">
+  <div class="page-width">
+    <div class="ll-accordion-img__grid">
+
+      {%- comment -%} ── LEFT COLUMN ── {%- endcomment -%}
+      <div class="ll-accordion-img__left">
+        {%- if section.settings.heading != blank -%}
+          <div class="ll-accordion-img__heading rte">{{ section.settings.heading }}</div>
+        {%- endif -%}
+
+        {%- assign rows = section.blocks | where: 'type', 'accordion_row' -%}
+        {%- if rows.size > 0 -%}
+          <div class="ll-accordion-img__accordion">
+            {%- for block in rows -%}
+              <div
+                class="ll-accordion-img__row{% if block.settings.open_by_default %} is-open{% endif %}"
+                {{ block.shopify_attributes }}
+              >
+                <button
+                  type="button"
+                  class="ll-accordion-img__trigger"
+                  aria-expanded="{% if block.settings.open_by_default %}true{% else %}false{% endif %}"
+                  data-ll-accordion-trigger
+                >
+                  <span class="ll-accordion-img__trigger-label">{{ block.settings.heading }}</span>
+                  <span class="ll-accordion-img__icon" aria-hidden="true"></span>
+                </button>
+                <div
+                  class="ll-accordion-img__body{% if block.settings.open_by_default %} is-open{% endif %}"
+                  data-ll-accordion-body
+                >
+                  {%- if block.settings.content != blank -%}
+                    <div class="ll-accordion-img__body-inner rte">{{ block.settings.content }}</div>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} ── RIGHT COLUMN ── {%- endcomment -%}
+      <div class="ll-accordion-img__right">
+        {%- if section.settings.image != blank -%}
+          {{ section.settings.image | image_url: width: 1100 | image_tag:
+            class: 'll-accordion-img__image',
+            loading: 'lazy',
+            alt: section.settings.image.alt | default: section.settings.heading | escape
+          }}
+        {%- else -%}
+          <div class="ll-accordion-img__image-placeholder">
+            {{ 'product-1' | placeholder_svg_tag }}
+          </div>
+        {%- endif -%}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    function initAccordions(container) {
+      var triggers = container.querySelectorAll('[data-ll-accordion-trigger]');
+      triggers.forEach(function (trigger) {
+        var body = trigger.nextElementSibling;
+        var row = trigger.closest('.ll-accordion-img__row');
+        if (!body) return;
+
+        if (body.classList.contains('is-open')) {
+          body.style.height = 'auto';
+        }
+
+        body.addEventListener('transitionend', function () {
+          if (body.classList.contains('is-open')) {
+            body.style.height = 'auto';
+          }
+        });
+
+        trigger.addEventListener('click', function () {
+          var isOpen = body.classList.contains('is-open');
+          if (isOpen) {
+            body.style.height = body.scrollHeight + 'px';
+            body.classList.remove('is-open');
+            row && row.classList.remove('is-open');
+            requestAnimationFrame(function () {
+              requestAnimationFrame(function () {
+                body.style.height = '0px';
+              });
+            });
+            trigger.setAttribute('aria-expanded', 'false');
+          } else {
+            body.classList.add('is-open');
+            row && row.classList.add('is-open');
+            body.style.height = body.scrollHeight + 'px';
+            trigger.setAttribute('aria-expanded', 'true');
+          }
+        });
+      });
+    }
+
+    function initAll() {
+      document.querySelectorAll('.ll-accordion-img').forEach(initAccordions);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAll);
+    } else {
+      initAll();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "LL Accordion + Image",
+  "tag": "section",
+  "class": "ll-accordion-img-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "<p>No Scoop. No Shaker. Just Results.</p><p>5g creatine + electrolytes in a grab-and-go stick made for daily performance.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Product image"
+    },
+    {
+      "type": "color",
+      "id": "image_bg_color",
+      "label": "Image tile background",
+      "default": "#dff1ff"
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Image tile corner radius",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "image_padding",
+      "label": "Image tile padding",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "checkbox",
+      "id": "image_flip_on_mobile",
+      "label": "Show image above accordion on mobile",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "accordion_bg_color",
+      "label": "Accordion card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Row divider color",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "color",
+      "id": "row_label_color",
+      "label": "Row label color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "row_body_color",
+      "label": "Row body text color",
+      "default": "#4b5563"
+    },
+    {
+      "type": "color",
+      "id": "icon_border_color",
+      "label": "Icon circle border",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon plus/minus color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "accordion_row",
+      "name": "Accordion row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Row heading",
+          "default": "Product Description"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Row content",
+          "default": "<p>Add your content here.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "Open by default",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LL Accordion + Image",
+      "category": "Custom",
+      "blocks": [
+        { "type": "accordion_row", "settings": { "heading": "Product Description" } },
+        { "type": "accordion_row", "settings": { "heading": "Product Description" } },
+        { "type": "accordion_row", "settings": { "heading": "Product Description" } },
+        { "type": "accordion_row", "settings": { "heading": "Product Description" } },
+        { "type": "accordion_row", "settings": { "heading": "Product Description" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

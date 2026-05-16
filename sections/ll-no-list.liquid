@@ -1,0 +1,333 @@
+{% style %}
+
+    .ll-no-list-section {
+      padding-top: {{ section.settings.padding_top_desktop }}px;
+      padding-bottom: {{ section.settings.padding_bottom_desktop }}px;
+      background-color: {{ section.settings.background_color }};
+      overflow: hidden;
+    }
+    
+    .ll-no-list-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+    }
+    
+    /* ── LEFT COLUMN: TEXT ── */
+    .ll-no-list-text-col {
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+    
+    .ll-no-list-heading {
+      font-size: 56px;
+      font-weight: 700;
+      line-height: 1.1;
+      margin: 0 0 16px 0;
+      letter-spacing: -1.5px;
+      text-transform: uppercase;
+    }
+    
+    .ll-no-list-subheading {
+      font-size: 24px;
+      font-weight: 400;
+      line-height: 1.4;
+      margin: 0;
+      opacity: 0.8;
+    }
+    
+    /* ── MIDDLE COLUMN: IMAGE ── */
+    .ll-no-list-image-col {
+      flex: 0 0 40%;
+      max-width: 40%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .ll-no-list-image-wrapper {
+      width: 100%;
+      max-width: 500px;
+    }
+    
+    .ll-no-list-image-wrapper img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+    
+    /* ── RIGHT COLUMN: ITEMS ── */
+    .ll-no-list-items-col {
+      flex: 0 0 30%;
+      max-width: 30%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .ll-no-list-item {
+      display: flex;
+      align-items: center;
+      /* background: #FFFFFF; */
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.05);
+      min-height: 60px;
+    }
+    
+    .ll-no-list-item-icon {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .ll-no-list-item-icon img {
+      height: 100%;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+    
+    .ll-no-list-item-text {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #000000;
+      padding: 10px 20px 10px 15px;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+    }
+    
+    /* ── RESPONSIVE ── */
+    @media screen and (max-width: 990px) {
+      .ll-no-list-inner {
+        flex-direction: column;
+        text-align: center;
+        gap: 32px;
+      }
+    
+      .ll-no-list-text-col,
+      .ll-no-list-image-col,
+      .ll-no-list-items-col {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+      
+      .ll-no-list-heading {
+        font-size: 42px;
+      }
+      
+      .ll-no-list-items-col {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+    }
+    
+    @media screen and (max-width: 749px) {
+      .ll-no-list-section {
+        padding-top: {{ section.settings.padding_top_mobile }}px;
+        padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+      }
+    
+      .ll-no-list-heading {
+        font-size: 36px;
+        margin: 0 0 8px 0;
+      }
+    
+      .ll-no-list-subheading {
+        font-size: 18px;
+      }
+      
+      .ll-no-list-item {
+        min-height: 50px;
+      }
+      
+      .ll-no-list-item-icon {
+        height: 50px;
+      }
+    
+      .ll-no-list-item-text {
+        font-size: 16px;
+        padding: 8px 15px 8px 12px;
+      }
+    }
+    
+    {% endstyle %}
+    
+    <div class="ll-no-list-section gradient">
+      <div class="page-width">
+        <div class="ll-no-list-inner">
+    
+          {%- comment -%} ── LEFT COLUMN: HEADING & SUBHEADING ── {%- endcomment -%}
+          <div class="ll-no-list-text-col">
+            {%- if section.settings.heading != blank -%}
+              <h2 class="ll-no-list-heading" style="color: {{ section.settings.text_color }};">
+                {{ section.settings.heading }}
+              </h2>
+            {%- endif -%}
+            
+            {%- if section.settings.subheading != blank -%}
+              <p class="ll-no-list-subheading" style="color: {{ section.settings.text_color }};">
+                {{ section.settings.subheading }}
+              </p>
+            {%- endif -%}
+          </div>
+    
+          {%- comment -%} ── MIDDLE COLUMN: MAIN PRODUCT IMAGE ── {%- endcomment -%}
+          <div class="ll-no-list-image-col">
+            {%- if section.settings.main_image != blank -%}
+              <div class="ll-no-list-image-wrapper">
+                {{ section.settings.main_image | image_url: width: 1000 | image_tag:
+                  loading: 'lazy',
+                  alt: section.settings.main_image.alt | escape
+                }}
+              </div>
+            {%- endif -%}
+          </div>
+    
+          {%- comment -%} ── RIGHT COLUMN: THE "NO" LIST BLOCKS ── {%- endcomment -%}
+          <div class="ll-no-list-items-col">
+            {%- for block in section.blocks -%}
+              <div class="ll-no-list-item" {{ block.shopify_attributes }}>
+                
+                {%- if block.settings.angle_image != blank -%}
+                  <div class="ll-no-list-item-icon">
+                    {{ block.settings.angle_image | image_url: height: 120 | image_tag:
+                      loading: 'lazy',
+                      alt: block.settings.angle_image.alt | escape
+                    }}
+                  </div>
+                {%- endif -%}
+    
+                {%- if block.settings.text != blank -%}
+                  <p class="ll-no-list-item-text">{{ block.settings.text }}</p>
+                {%- endif -%}
+                
+              </div>
+            {%- endfor -%}
+          </div>
+    
+        </div>
+      </div>
+    </div>
+    
+    {% schema %}
+    {
+      "name": "LL The NO List",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "The \"NO\" List"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "No nasties in sight."
+        },
+        {
+          "type": "image_picker",
+          "id": "main_image",
+          "label": "Main Image",
+          "info": "Upload the center product image (e.g. the glass/drink)."
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Background Color",
+          "default": "transparent"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text Color",
+          "default": "#000000"
+        },
+        {
+          "type": "header",
+          "content": "Spacing"
+        },
+        {
+          "type": "range",
+          "id": "padding_top_desktop",
+          "label": "Padding Top (Desktop)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "px",
+          "default": 60
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom_desktop",
+          "label": "Padding Bottom (Desktop)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "px",
+          "default": 60
+        },
+        {
+          "type": "range",
+          "id": "padding_top_mobile",
+          "label": "Padding Top (Mobile)",
+          "min": 0,
+          "max": 80,
+          "step": 1,
+          "unit": "px",
+          "default": 40
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom_mobile",
+          "label": "Padding Bottom (Mobile)",
+          "min": 0,
+          "max": 80,
+          "step": 1,
+          "unit": "px",
+          "default": 40
+        }
+      ],
+      "blocks": [
+        {
+          "type": "list_item",
+          "name": "List Item",
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "angle_image",
+              "label": "Angle Image",
+              "info": "Upload the angled graphic exported from Figma."
+            },
+            {
+              "type": "text",
+              "id": "text",
+              "label": "Item Text",
+              "default": "NO FILLERS"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "LL The NO List",
+          "blocks": [
+            { "type": "list_item", "settings": { "text": "NO FILLERS" } },
+            { "type": "list_item", "settings": { "text": "NO ARTIFICIAL DYES" } },
+            { "type": "list_item", "settings": { "text": "NO ARTIFICIAL FLAVORS" } },
+            { "type": "list_item", "settings": { "text": "NO ADDED SUGAR" } },
+            { "type": "list_item", "settings": { "text": "NO BANNED SUBSTANCES" } },
+            { "type": "list_item", "settings": { "text": "NO PROPRIETARY BLENDS" } }
+          ]
+        }
+      ]
+    }
+    {% endschema %}

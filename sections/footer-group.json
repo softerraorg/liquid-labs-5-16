@@ -1,0 +1,53 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.footer.name",
+  "type": "footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "image_hA9MQa": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Logo_Dark_2.png",
+            "image_width": 200,
+            "alignment": "center"
+          }
+        }
+      },
+      "block_order": [
+        "image_hA9MQa"
+      ],
+      "settings": {
+        "color_scheme": "scheme-1",
+        "newsletter_enable": false,
+        "newsletter_heading": "",
+        "enable_follow_on_shop": false,
+        "show_social": false,
+        "enable_country_selector": false,
+        "enable_language_selector": false,
+        "payment_enable": false,
+        "contact_enable": true,
+        "contact_heading": "Have Any Questions?",
+        "contact_subtext": "We're here to help. Reach out to us anytime!",
+        "contact_email": "Hello@shopliquidlabs.com",
+        "contact_note": "",
+        "show_policy": false,
+        "margin_top": 0,
+        "padding_top": 52,
+        "padding_bottom": 52
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

@@ -1,0 +1,253 @@
+{% liquid
+  assign show_bar = true
+  if section.settings.product_pages_only
+    if template.name != 'product'
+      assign show_bar = false
+    endif
+  endif
+  if section.settings.order_count
+  assign current = shop.metafields.custom.founder_count.value | default: section.settings.current_count | plus: 0 
+  else
+  assign current = section.settings.current_count | plus: 0 
+  endif
+  assign total = section.settings.total_count | plus: 0
+  if total > 0
+    assign progress_pct = current | times: 100.0 | divided_by: total
+  else
+    assign progress_pct = 0
+  endif
+%}
+
+{%- if show_bar -%}
+{% style %}
+  .ll-founder-progress {
+    background-color: {{ section.settings.bg_color }};
+    padding: {{ section.settings.padding_vertical }}px 0;
+  }
+
+  .ll-fp-container {
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 0 5rem;
+  }
+
+  .ll-fp-track {
+    position: relative;
+    width: 100%;
+    height: {{ section.settings.bar_height }}px;
+    background: {{ section.settings.track_color }};
+    border-radius: {{ section.settings.bar_height }}px;
+    overflow: hidden;
+  }
+
+  .ll-fp-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: {{ progress_pct }}%;
+    background: {{ section.settings.fill_color }};
+    border-radius: {{ section.settings.bar_height }}px;
+    transition: width 0.6s ease;
+  }
+
+  .ll-fp-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: {{ section.settings.font_size_desktop }}px;
+    font-weight: {{ section.settings.font_weight }};
+    color: {{ section.settings.text_color }}!important;
+    z-index: 1;
+    pointer-events: none;
+  font-family: "Inter", sans-serif;
+line-height: 30px;
+display: flex;
+align-items: center;
+letter-spacing: -0.5px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ll-fp-container {
+      max-width: 100%;
+      padding: 0 1.5rem;
+    }
+    .ll-fp-label {
+      font-size: {{ section.settings.font_size_mobile }}px;
+    }
+     .ll-fp-track {
+    height: {{ section.settings.bar_height_mobile }}px;
+  }
+  .ll-founder-progress { 
+    padding-bottom: 0;
+}
+  }
+{% endstyle %}
+
+<div class="ll-founder-progress">
+  <div class="ll-fp-container">
+    <div class="ll-fp-track">
+      <div class="ll-fp-fill" style="display: block;"></div>
+      <span class="ll-fp-label">
+        {{ section.settings.bar_text | replace: '[current]', current | replace: '[total]', total }}
+      </span>
+    </div>
+  </div>
+</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "LL Progress Bar",
+  "class": "ll-founder-progress-section",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "product_pages_only",
+      "label": "Show only on product pages",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "bar_text",
+      "label": "Bar Text",
+      "default": "[current]/[total] founder spots claimed",
+      "info": "Use [current] and [total] as placeholders."
+    },
+     {
+    "type": "checkbox",
+    "id": "order_count",
+    "label": "Show Order Count in Current Count below",
+    "info": "Enable this to display a dynamic order count instead of the static “Current Count” value.",
+    "default":true
+    },
+    {
+      "type": "text",
+      "id": "current_count",
+      "label": "Current Count",
+      "default": "85",
+      "info": "Number of spots claimed."
+    },
+    {
+      "type": "text",
+      "id": "total_count",
+      "label": "Total Count",
+      "default": "300",
+      "info": "Total number of spots available."
+    },
+    {
+      "type": "header",
+      "content": "Bar Appearance"
+    },
+    {
+      "type": "range",
+      "id": "bar_height",
+      "label": "Bar Height",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "bar_height_mobile",
+      "label": "Bar Height",
+      "min": 20,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 25
+    },
+    
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "label": "Vertical Padding",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section Background",
+      "default": "#1a1a2e"
+    },
+    {
+      "type": "color",
+      "id": "track_color",
+      "label": "Track Color (empty part)",
+      "default": "#c7d2fe"
+    },
+    {
+      "type": "color",
+      "id": "fill_color",
+      "label": "Fill Color (progress)",
+      "default": "#93a8f4"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a2e"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "font_size_desktop",
+      "label": "Font Size (Desktop)",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Font Size (Mobile)",
+      "min": 8,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "font_weight",
+      "label": "Font Weight",
+      "min": 300,
+      "max": 800,
+      "step": 100,
+      "default": 500
+    }
+  ],
+  "presets": [
+    {
+      "name": "LL Progress Bar"
+    }
+  ]
+}
+{% endschema %}

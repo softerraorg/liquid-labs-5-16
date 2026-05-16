@@ -1,0 +1,752 @@
+{% schema %}
+{
+  "name": "Liquid Labs Video",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "text",    "id": "title",   "label": "Section Title", "default": "Behind the scenes" },
+    { "type": "header",  "content": "Section Padding" },
+    { "type": "range",   "id": "padding_top",          "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Padding Top (Desktop)",    "default": 36 },
+    { "type": "range",   "id": "padding_bottom",        "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Padding Bottom (Desktop)", "default": 36 },
+    { "type": "range",   "id": "padding_top_mobile",    "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Padding Top (Mobile)",     "default": 20 },
+    { "type": "range",   "id": "padding_bottom_mobile", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Padding Bottom (Mobile)",  "default": 20 },
+    {
+      "type": "select", "id": "layout", "label": "Layout",
+      "options": [{ "value": "grid", "label": "Grid" }, { "value": "slider", "label": "Slider" }],
+      "default": "grid"
+    },
+    { "type": "range",   "id": "video_width",           "min": 200, "max": 600, "step": 10, "unit": "px", "label": "Video Width (Grid)",      "default": 360 },
+    { "type": "color",   "id": "background_color",      "label": "Background Color" },
+    { "type": "header",  "content": "Slider Settings" },
+    { "type": "range",   "id": "slides_to_show",        "min": 1, "max": 5, "step": 1, "label": "Slides to Show (Desktop)", "default": 3 },
+    { "type": "range",   "id": "slides_to_show_mobile", "min": 1, "max": 3, "step": 1, "label": "Slides to Show (Mobile)",  "default": 2 },
+    { "type": "checkbox","id": "show_arrows",    "label": "Show Navigation Arrows", "default": true  },
+    { "type": "checkbox","id": "show_dots",      "label": "Show Navigation Dots",   "default": true  },
+    { "type": "checkbox","id": "autoplay",       "label": "Autoplay Slider",        "default": false },
+    { "type": "range",   "id": "autoplay_speed", "min": 2000, "max": 8000, "step": 500, "unit": "ms", "label": "Autoplay Speed", "default": 3000 }
+  ],
+  "blocks": [{
+    "type": "video",
+    "name": "Video",
+    "limit": 10,
+    "settings": [
+      { "type": "video",        "id": "video",       "label": "Video"       },
+      { "type": "image_picker", "id": "cover_image", "label": "Cover Image (optional overlay)" }
+    ]
+  }],
+  "presets": [{
+    "name": "Liquid Labs Video",
+    "blocks": [{ "type": "video" }, { "type": "video" }, { "type": "video" }]
+  }]
+}
+{% endschema %}
+
+{% comment %}Preload above-the-fold cover images{% endcomment %}
+{% for block in section.blocks %}
+  {% if block.settings.cover_image %}
+    <link rel="preload" as="image" href="{{ block.settings.cover_image | image_url: width: 1200 }}" fetchpriority="high">
+  {% endif %}
+{% endfor %}
+
+{%- comment -%}
+  Clone count calculation.
+  We use max(desktopPer * 2, mobilePer * 2, total) clones per side so that:
+    • No matter which breakpoint is active, we always have ≥ perPage clones
+      available — preventing blank space during the wrap-around animation.
+    • The pre-paint inline script can safely place the track at –(ll_clones × slideWidth)
+      so that real slide 0 is the FIRST thing iOS sees on the first paint.
+{%- endcomment -%}
+{%- assign ll_total = section.blocks.size -%}
+{%- assign ll_clones_d = section.settings.slides_to_show | times: 2 -%}
+{%- assign ll_clones_m = section.settings.slides_to_show_mobile | times: 2 -%}
+{%- if ll_clones_d >= ll_clones_m -%}
+  {%- assign ll_clones = ll_clones_d -%}
+{%- else -%}
+  {%- assign ll_clones = ll_clones_m -%}
+{%- endif -%}
+{%- if ll_clones > ll_total -%}{%- assign ll_clones = ll_total -%}{%- endif -%}
+{%- assign ll_prepend_offset = ll_total | minus: ll_clones -%}
+
+<style>
+  /* ── Section wrapper ── */
+  #liquid-l-section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    text-align: center;
+    background: radial-gradient(circle at center, #302d3a, #191720),
+                url(/cdn/shop/files/bg.webp?v=1773264135);
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: soft-light;
+  }
+  @media (max-width: 749px) {
+    #liquid-l-section-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    }
+  }
+
+  /* ── Section title ── */
+  #liquid-l-section-{{ section.id }} .liquid-l-title {
+    font-size: 40px;
+    margin: 0 0 40px;
+    color: #fff;
+  }
+
+  /* ── Grid layout ── */
+  #liquid-l-section-{{ section.id }} .liquid-l-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ── Slider: outer clips off-screen slides ── */
+  #liquid-l-section-{{ section.id }} .liquid-l-outer {
+    max-width: 1300px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  /* ── Slider: track carries the translateX animation ── */
+  #liquid-l-section-{{ section.id }} .liquid-l-track {
+    display: flex;
+    will-change: transform;
+    /* Transition set by JS only when animating */
+    transition: none;
+  }
+
+  /* ── Single slide ──
+     CSS sets the initial widths from Liquid values so the layout is
+     correct BEFORE JavaScript runs (no layout shift, no flash). */
+  #liquid-l-section-{{ section.id }} .liquid-l-slide {
+    flex: 0 0 calc(100% / {{ section.settings.slides_to_show }});
+    width: calc(100% / {{ section.settings.slides_to_show }});
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+  @media (max-width: 749px) {
+    #liquid-l-section-{{ section.id }} .liquid-l-slide {
+      flex: 0 0 calc(100% / {{ section.settings.slides_to_show_mobile }});
+      width: calc(100% / {{ section.settings.slides_to_show_mobile }});
+      padding: 0 6px;
+    }
+  }
+
+  /* ── Card / item ── */
+  #liquid-l-section-{{ section.id }} .liquid-l-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  /* ── Video wrapper — 9:16 aspect ratio ── */
+  #liquid-l-section-{{ section.id }} .liquid-l-video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 177.78%;
+  }
+
+  /* ── Video element ──
+     pointer-events: none prevents native tap-to-play on iOS.
+     We handle cover-click ourselves. */
+  #liquid-l-section-{{ section.id }} .liquid-l-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+
+  /* ── Cover image (optional) ── */
+  #liquid-l-section-{{ section.id }} .liquid-l-cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 2;
+    transition: opacity 0.4s;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  #liquid-l-section-{{ section.id }} .liquid-l-item.liquid-l-playing .liquid-l-cover {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ── Hide the iOS Safari native play-button overlay.
+     Targeting by class (not section ID) is required for WebKit
+     shadow-DOM pseudo-elements to be overridden reliably. ── */
+  .liquid-l-video::-webkit-media-controls,
+  .liquid-l-video::-webkit-media-controls-panel,
+  .liquid-l-video::-webkit-media-controls-play-button,
+  .liquid-l-video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    opacity: 0 !important;
+    -webkit-appearance: none !important;
+  }
+
+  /* ── Navigation arrows ── */
+  #liquid-l-section-{{ section.id }} .liquid-l-arrows {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
+  }
+  #liquid-l-section-{{ section.id }} .liquid-l-arrow {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.6);
+    background: #fff;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+    transition: background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    user-select: none;
+  }
+  #liquid-l-section-{{ section.id }} .liquid-l-arrow:hover { background: #f0f0f0; }
+  #liquid-l-section-{{ section.id }} .liquid-l-arrow svg {
+    width: 20px; height: 20px;
+    fill: none;
+    stroke: #5D5D5D;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: block;
+  }
+
+  /* ── Dots ── */
+  #liquid-l-section-{{ section.id }} .liquid-l-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+  }
+  #liquid-l-section-{{ section.id }} .liquid-l-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    border: none; padding: 0;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #liquid-l-section-{{ section.id }} .liquid-l-dot.is-active {
+    background: #fff;
+    transform: scale(1.3);
+  }
+</style>
+
+<section id="liquid-l-section-{{ section.id }}" class="liquid-l-section">
+  <div class="page-width">
+    <h2 class="liquid-l-title">{{ section.settings.title }}</h2>
+
+    {% if section.settings.layout == 'grid' %}
+
+      <div class="liquid-l-grid">
+        {% for block in section.blocks %}
+          <div class="liquid-l-item" style="width:{{ section.settings.video_width }}px;" {{ block.shopify_attributes }}>
+            <div class="liquid-l-video-wrapper">
+              {% if block.settings.video %}
+                <video autoplay muted loop playsinline webkit-playsinline class="liquid-l-video">
+                  {% for source in block.settings.video.sources %}
+                    <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                  {% endfor %}
+                </video>
+              {% endif %}
+              {% if block.settings.cover_image %}
+                <img class="liquid-l-cover"
+                  src="{{ block.settings.cover_image | image_url: width: 1200 }}"
+                  loading="eager" fetchpriority="high" decoding="sync" alt="">
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+    {% else %}
+
+      {%- comment -%}
+        ── SLIDER ────────────────────────────────────────────────────────
+        Clone slides are rendered directly in Liquid (not added by JS)
+        so they exist in the DOM instantly at HTML parse time.
+        The inline <script> below sets the correct translateX BEFORE the
+        first browser paint. iOS processes the `autoplay` attribute when
+        video data loads — which is always AFTER our script has run —
+        so iOS sees the real slides in the viewport and autoplays them.
+        ──────────────────────────────────────────────────────────────────
+      {%- endcomment -%}
+
+      <div class="liquid-l-outer" id="liquid-l-outer-{{ section.id }}">
+        <div class="liquid-l-track" id="liquid-l-track-{{ section.id }}">
+
+          {%- comment -%}── Prepend clones: copies of the LAST ll_clones blocks ──{%- endcomment -%}
+          {% for block in section.blocks offset: ll_prepend_offset %}
+            <div class="liquid-l-slide" aria-hidden="true" data-ll-clone="prepend">
+              <div class="liquid-l-item">
+                <div class="liquid-l-video-wrapper">
+                  {% if block.settings.video %}
+                    <video autoplay muted loop playsinline webkit-playsinline class="liquid-l-video">
+                      {% for source in block.settings.video.sources %}
+                        <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                      {% endfor %}
+                    </video>
+                  {% endif %}
+                  {% if block.settings.cover_image %}
+                    <img class="liquid-l-cover" src="{{ block.settings.cover_image | image_url: width: 1200 }}" loading="lazy" alt="">
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+
+          {%- comment -%}── Real slides ──{%- endcomment -%}
+          {% for block in section.blocks %}
+            <div class="liquid-l-slide" data-ll-real="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+              <div class="liquid-l-item">
+                <div class="liquid-l-video-wrapper">
+                  {% if block.settings.video %}
+                    <video autoplay muted loop playsinline webkit-playsinline class="liquid-l-video">
+                      {% for source in block.settings.video.sources %}
+                        <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                      {% endfor %}
+                    </video>
+                  {% endif %}
+                  {% if block.settings.cover_image %}
+                    <img class="liquid-l-cover"
+                      src="{{ block.settings.cover_image | image_url: width: 1200 }}"
+                      loading="eager" fetchpriority="high" decoding="sync" alt="">
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+
+          {%- comment -%}── Append clones: copies of the FIRST ll_clones blocks ──{%- endcomment -%}
+          {% for block in section.blocks limit: ll_clones %}
+            <div class="liquid-l-slide" aria-hidden="true" data-ll-clone="append">
+              <div class="liquid-l-item">
+                <div class="liquid-l-video-wrapper">
+                  {% if block.settings.video %}
+                    <video autoplay muted loop playsinline webkit-playsinline class="liquid-l-video">
+                      {% for source in block.settings.video.sources %}
+                        <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                      {% endfor %}
+                    </video>
+                  {% endif %}
+                  {% if block.settings.cover_image %}
+                    <img class="liquid-l-cover" src="{{ block.settings.cover_image | image_url: width: 1200 }}" loading="lazy" alt="">
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+
+        </div><!-- /.liquid-l-track -->
+      </div><!-- /.liquid-l-outer -->
+
+      {%- comment -%}
+        ── PRE-PAINT POSITION SCRIPT ─────────────────────────────────────
+        Runs synchronously during HTML parsing — the browser has NOT yet
+        painted anything when this executes. We set translateX to
+        –(ll_clones × slideWidth) so the first real slide is at position 0
+        on the very first paint. The double-rAF in the main JS will refine
+        this to exact pixel values after layout, but iOS has already seen
+        the correct content by then.
+        ──────────────────────────────────────────────────────────────────
+      {%- endcomment -%}
+      <script>
+      (function () {
+        var pp = window.innerWidth <= 749
+          ? {{ section.settings.slides_to_show_mobile | json }}
+          : {{ section.settings.slides_to_show | json }};
+        var n  = {{ ll_clones | json }};
+        /* Approximate outer width before layout.
+           We subtract ~40px each side for page-width padding on desktop. */
+        var outerW = window.innerWidth <= 749
+          ? window.innerWidth
+          : Math.min(window.innerWidth - 80, 1300);
+        var sw = outerW / pp;
+        var t = document.getElementById('liquid-l-track-{{ section.id }}');
+        if (t) { t.style.transform = 'translateX(' + (-n * sw) + 'px)'; }
+      }());
+      </script>
+
+      {% if section.settings.show_arrows %}
+        <div class="liquid-l-arrows">
+          <button type="button" class="liquid-l-arrow" id="liquid-l-prev-{{ section.id }}" aria-label="Previous slide">
+            <svg viewBox="0 0 27 27"><path d="M23.848 13.128H2.412M2.412 13.128l10.716 10.716M2.412 13.128l10.716-10.717"/></svg>
+          </button>
+          <button type="button" class="liquid-l-arrow" id="liquid-l-next-{{ section.id }}" aria-label="Next slide">
+            <svg viewBox="0 0 27 27"><path d="M2.412 13.128H23.848M23.848 13.128L13.132 23.844M23.848 13.128L13.132 2.411"/></svg>
+          </button>
+        </div>
+      {% endif %}
+
+      {% if section.settings.show_dots %}
+        <div class="liquid-l-dots" id="liquid-l-dots-{{ section.id }}">
+          {% for block in section.blocks %}
+            <button type="button"
+              class="liquid-l-dot{% if forloop.first %} is-active{% endif %}"
+              data-ll-ri="{{ forloop.index0 }}"
+              aria-label="Go to slide {{ forloop.index }}">
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+    {% endif %}
+  </div>
+</section>
+
+<script>
+(function () {
+  /* ─────────────────────────────────────────────────────────────────────
+     Liquid Labs Video — main slider + video controller
+     ───────────────────────────────────────────────────────────────────── */
+
+  var SID = '{{ section.id }}';
+
+  /* Slider settings from Liquid */
+  var DESKTOP_PER   = {{ section.settings.slides_to_show | json }};
+  var MOBILE_PER    = {{ section.settings.slides_to_show_mobile | json }};
+  var DO_AUTO       = {{ section.settings.autoplay | json }};
+  var AUTO_DELAY    = {{ section.settings.autoplay_speed | json }};
+  var LL_TOTAL      = {{ ll_total | json }};
+  var LL_CLONES     = {{ ll_clones | json }};
+
+  /* Module-level refs (reset on re-init) */
+  var outerEl, trackEl, dotsEl, prevEl, nextEl;
+  var allSlides = [];
+  var trackIdx  = LL_CLONES; /* current slide index (prepend zone offset) */
+  var isAnim    = false;
+  var autoTimer = null;
+  var sectionVisible = false;
+  var resizeTimer;
+
+  /* ── Helpers ── */
+  function pp()  { return window.innerWidth <= 749 ? MOBILE_PER : DESKTOP_PER; }
+  function sw()  { return outerEl.offsetWidth / pp(); }
+
+  function getRealIdx() {
+    return ((trackIdx - LL_CLONES) % LL_TOTAL + LL_TOTAL) % LL_TOTAL;
+  }
+
+  /* ── Apply exact px widths after layout ── */
+  function applyWidths() {
+    var w = sw() + 'px';
+    allSlides.forEach(function (s) { s.style.width = w; });
+  }
+
+  /* ── Set track position ──
+     forceNoAnim: skip CSS transition for instant jumps (clone-zone correction). */
+  function setTransform(idx, animate) {
+    if (animate) {
+      trackEl.style.transition = 'transform 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    } else {
+      trackEl.style.transition = 'none';
+      void trackEl.offsetWidth; /* force reflow so transition:none commits */
+    }
+    trackEl.style.transform = 'translateX(' + (-(idx * sw())) + 'px)';
+  }
+
+  /* ── Navigate to a track index ── */
+  function goTo(newIdx, animate) {
+    if (isAnim && animate) return;
+    trackIdx = newIdx;
+    if (animate) isAnim = true;
+    setTransform(trackIdx, animate);
+    updateDots();
+    if (!animate) updateVideoPlayback();
+  }
+
+  function next() { goTo(trackIdx + 1, true); resetAutoplay(); }
+  function prev() { goTo(trackIdx - 1, true); resetAutoplay(); }
+
+  /* ── Handle end of CSS transition ──
+     If we animated into the clone zone, instantly jump to the
+     equivalent real-slide position (visually identical — seamless loop). */
+  function onTransitionEnd(e) {
+    if (e.propertyName !== 'transform') return;
+    isAnim = false;
+    if (trackIdx < LL_CLONES) {
+      trackIdx += LL_TOTAL;
+      setTransform(trackIdx, false);
+      updateDots();
+    } else if (trackIdx >= LL_CLONES + LL_TOTAL) {
+      trackIdx -= LL_TOTAL;
+      setTransform(trackIdx, false);
+      updateDots();
+    }
+    updateVideoPlayback();
+  }
+
+  /* ── Dots ── */
+  function updateDots() {
+    if (!dotsEl) return;
+    var ri = getRealIdx();
+    Array.prototype.slice.call(dotsEl.querySelectorAll('.liquid-l-dot'))
+      .forEach(function (d) {
+        d.classList.toggle('is-active',
+          parseInt(d.getAttribute('data-ll-ri'), 10) === ri);
+      });
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     VIDEO MANAGEMENT
+     Key approach: direct play()/pause() keyed to visibility.
+     – llShouldPlay flag lets the pause-recovery handler know whether
+       this video was paused externally (by Dawn's pauseAllMedia etc.)
+       and needs to be restarted.
+     ════════════════════════════════════════════════════════════════════ */
+
+  function safePlay(v) {
+    if (!v) return;
+    v.muted = true;
+    v.dataset.llShouldPlay = '1';
+    var p = v.play();
+    if (p instanceof Promise) {
+      p.catch(function () {
+        /* iOS: video data may not be ready — retry when it is */
+        var fn = function () {
+          v.removeEventListener('canplay', fn);
+          if (v.dataset.llShouldPlay === '1') {
+            v.muted = true;
+            v.play().catch(function () {});
+          }
+        };
+        v.addEventListener('canplay', fn);
+      });
+    }
+  }
+
+  function safePause(v) {
+    if (!v) return;
+    v.dataset.llShouldPlay = '0';
+    if (!v.paused) v.pause();
+  }
+
+  /* Play videos in the currently visible slides, pause everything else */
+  function updateVideoPlayback() {
+    allSlides.forEach(function (slide, i) {
+      var v = slide.querySelector('.liquid-l-video');
+      if (!v) return;
+      var visible = (i >= trackIdx) && (i < trackIdx + pp());
+      if (sectionVisible && visible) {
+        safePlay(v);
+      } else {
+        safePause(v);
+      }
+    });
+  }
+
+  /* Bind event listeners to each video element (idempotent) */
+  function bindVideos(sectionEl) {
+    Array.prototype.slice.call(sectionEl.querySelectorAll('.liquid-l-video'))
+      .forEach(function (v) {
+        if (v.dataset.llBound) return;
+        v.dataset.llBound = '1';
+        v.muted = true;
+
+        /* Walk up to find the .liquid-l-item ancestor */
+        var item = v.parentNode;
+        while (item && !item.classList.contains('liquid-l-item')) {
+          item = item.parentNode;
+        }
+
+        if (item) {
+          /* CSS class toggles for cover-image fade */
+          v.addEventListener('playing', function () { item.classList.add('liquid-l-playing'); });
+          v.addEventListener('pause',   function () { item.classList.remove('liquid-l-playing'); });
+
+          /* Dawn theme / browser-initiated pause recovery:
+             If Dawn calls pauseAllMedia() while the section is visible,
+             this restarts the active video after a short delay. */
+          v.addEventListener('pause', function () {
+            if (v.dataset.llShouldPlay === '1' && sectionVisible) {
+              setTimeout(function () {
+                if (v.dataset.llShouldPlay === '1' && sectionVisible) safePlay(v);
+              }, 350);
+            }
+          });
+
+          /* Cover-image click: start play */
+          var cover = item.querySelector('.liquid-l-cover');
+          if (cover && !cover.dataset.llBound) {
+            cover.dataset.llBound = '1';
+            cover.addEventListener('click', function () {
+              v.muted = true;
+              safePlay(v);
+            });
+          }
+        }
+      });
+  }
+
+  /* ── Section visibility (IntersectionObserver on the whole section) ── */
+  function observeSection(sectionEl) {
+    var io = new IntersectionObserver(function (entries) {
+      sectionVisible = entries[0].isIntersecting;
+      updateVideoPlayback();
+    }, { threshold: 0.05 });
+    io.observe(sectionEl);
+  }
+
+  /* ── Touch / swipe ── */
+  function bindTouch() {
+    var startX, startY, dragging;
+    trackEl.addEventListener('touchstart', function (e) {
+      startX   = e.touches[0].clientX;
+      startY   = e.touches[0].clientY;
+      dragging = true;
+    }, { passive: true });
+
+    /* Prevent page scroll only when clearly swiping horizontally */
+    trackEl.addEventListener('touchmove', function (e) {
+      if (!dragging) return;
+      var dx = Math.abs(e.touches[0].clientX - startX);
+      var dy = Math.abs(e.touches[0].clientY - startY);
+      if (dx > dy && dx > 5) e.preventDefault();
+    }, { passive: false });
+
+    trackEl.addEventListener('touchend', function (e) {
+      if (!dragging) return;
+      dragging = false;
+      var dx = e.changedTouches[0].clientX - startX;
+      var dy = e.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) < Math.abs(dy) * 0.8 || Math.abs(dx) < 30) return;
+      if (dx < 0) next(); else prev();
+    }, { passive: true });
+  }
+
+  /* ── Slider autoplay (periodic slide advance) ── */
+  function startAutoplay() {
+    if (!DO_AUTO) return;
+    stopAutoplay();
+    autoTimer = setInterval(function () {
+      if (!isAnim && sectionVisible) {
+        trackIdx += 1;
+        isAnim = true;
+        setTransform(trackIdx, true);
+        updateDots();
+      }
+    }, AUTO_DELAY);
+  }
+  function stopAutoplay()  { clearInterval(autoTimer); autoTimer = null; }
+  function resetAutoplay() { stopAutoplay(); startAutoplay(); }
+
+  /* ── Resize: recalculate widths & position ── */
+  function onResize() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      applyWidths();
+      setTransform(trackIdx, false);
+      updateVideoPlayback();
+    }, 120);
+  }
+
+  /* ════════════════════════════════════════════════════════════════════
+     INIT
+     ════════════════════════════════════════════════════════════════════ */
+  function init() {
+    var sectionEl = document.getElementById('liquid-l-section-' + SID);
+    if (!sectionEl) return;
+
+    outerEl = sectionEl.querySelector('#liquid-l-outer-' + SID);
+    trackEl = sectionEl.querySelector('#liquid-l-track-' + SID);
+
+    /* Grid layout: just bind videos and observe section */
+    if (!outerEl || !trackEl) {
+      bindVideos(sectionEl);
+      observeSection(sectionEl);
+      return;
+    }
+
+    dotsEl = sectionEl.querySelector('#liquid-l-dots-' + SID);
+    prevEl = sectionEl.querySelector('#liquid-l-prev-' + SID);
+    nextEl = sectionEl.querySelector('#liquid-l-next-' + SID);
+
+    /* Reset state */
+    trackIdx = LL_CLONES;
+    isAnim   = false;
+    stopAutoplay();
+    Array.prototype.slice.call(sectionEl.querySelectorAll('.liquid-l-video'))
+      .forEach(function (v) {
+        delete v.dataset.llBound;
+        delete v.dataset.llShouldPlay;
+      });
+
+    allSlides = Array.prototype.slice.call(trackEl.children);
+
+    /* Double rAF: layout is complete, offsetWidth is accurate.
+       The inline pre-paint script already set an approximate transform;
+       here we correct it to the exact pixel value. */
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+
+        applyWidths();
+        setTransform(trackIdx, false);
+
+        /* Attach transition listener */
+        trackEl.removeEventListener('transitionend', onTransitionEnd);
+        trackEl.addEventListener('transitionend', onTransitionEnd);
+
+        /* Arrows */
+        if (prevEl) {
+          prevEl.addEventListener('click', function () { prev(); });
+        }
+        if (nextEl) {
+          nextEl.addEventListener('click', function () { next(); });
+        }
+
+        /* Dots */
+        if (dotsEl) {
+          Array.prototype.slice.call(dotsEl.querySelectorAll('.liquid-l-dot'))
+            .forEach(function (dot) {
+              dot.addEventListener('click', function () {
+                var ri = parseInt(dot.getAttribute('data-ll-ri'), 10);
+                goTo(LL_CLONES + ri, true);
+                resetAutoplay();
+              });
+            });
+        }
+
+        bindVideos(sectionEl);
+        observeSection(sectionEl);
+        bindTouch();
+        window.addEventListener('resize', onResize);
+        startAutoplay();
+        updateDots();
+
+      }); /* end inner rAF */
+    }); /* end outer rAF */
+  }
+
+  /* ── Entry points ── */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  document.addEventListener('shopify:section:load', function (e) {
+    if (e.detail && e.detail.sectionId !== SID) return;
+    /* Clean up before re-init */
+    window.removeEventListener('resize', onResize);
+    if (trackEl) trackEl.removeEventListener('transitionend', onTransitionEnd);
+    stopAutoplay();
+    sectionVisible = false;
+    init();
+  });
+
+}());
+</script>

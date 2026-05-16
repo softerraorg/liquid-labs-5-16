@@ -1,0 +1,435 @@
+{% style %}
+
+    .ll-follow-updates-main-container {
+        padding-top: {{ section.settings.padding-top-desktop }}px;
+        padding-bottom: {{ section.settings.padding-bottom-desktop }}px;
+    }
+    
+    .ll-follow-updates-heading {
+        padding-bottom: 40px;
+    }
+    
+    .ll-follow-updates-heading h2 {
+        font-size: 46px;
+        line-height: 1.2;
+        margin: 0;
+        letter-spacing: -0.816832px;
+        text-align: center;
+    }
+    
+    /* .ll-follow-updates-main-wrapper {
+        max-width: 1120px;
+        margin: 0 auto;
+    } */
+    
+    /* Slider container */
+    .ll-updates-slider-viewport {
+        overflow: hidden;
+        width: 100%;
+    }
+    
+    .ll-updates-slider-track {
+        display: flex;
+        gap: 40px;
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        will-change: transform;
+    }
+    
+    /* Each slide takes exactly half the track minus half the gap */
+    .ll-updates-slide {
+        flex: 0 0 calc(50% - 20px);
+        min-width: calc(50% - 20px);
+    }
+    
+    .ll-follow-updates-blocks-wrapper {
+        padding: 42px 24px 24px 24px;
+        background: #AAC9FF;
+        border: 1.63366px solid #000000;
+        border-radius: 14.703px;
+        box-sizing: border-box;
+        height: 100%;
+    }
+    
+    .ll-follow-updates-block-heading p {
+        font-size: 24px;
+        line-height: 1;
+        margin: 0;
+        letter-spacing: -0.816832px;
+        color: #000000 !important;
+    }
+    
+    .ll-follow-updates-block-description p {
+        font-size: 24px;
+        line-height: 1.4;
+        margin: 0;
+        letter-spacing: -0.816832px;
+        color: #000000 !important;
+        padding-top: 22px;
+    }
+    
+    .ll-follow-updates-block-date p {
+        font-size: 20px;
+        line-height: 1.2;
+        margin: 0;
+        letter-spacing: -0.816832px;
+        color: #000000 !important;
+        padding-top: 22px;
+        text-align: end;
+    }
+    
+    /* Dots */
+    .ll-updates-dots {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: 40px;
+        list-style: none;
+        padding: 0;
+    }
+    
+    .ll-updates-dot {
+        width: 17px;
+        height: 17px;
+        padding: 0;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .ll-updates-dot svg circle {
+        fill: #D9D9D9;
+        transition: fill 0.3s ease;
+    }
+    
+    .ll-updates-dot.is-active svg circle {
+        fill: #ffffff;
+    }
+    
+    @media screen and (max-width: 749px) {
+        .ll-follow-updates-main-container {
+            padding-top: {{ section.settings.padding-top-mobile }}px;
+            padding-bottom: {{ section.settings.padding-bottom-mobile }}px;
+            padding-left: 10px;
+        padding-right: 10px;
+        }
+    
+        .ll-updates-slide {
+            flex: 0 0 100%;
+            min-width: 100%;
+        }
+    
+        .ll-updates-slider-track {
+            gap: 16px;
+        }
+    
+        .ll-follow-updates-heading h2 {
+        font-size: 20px;
+        line-height: 0.8;
+        letter-spacing: -0.5px;
+    }
+    
+    .ll-follow-updates-heading {
+        padding-bottom: 16px;
+    }
+    .ll-follow-updates-blocks-wrapper {
+        padding: 26px 19px 12px 21px;
+    }
+    
+    .ll-follow-updates-block-heading p {
+        font-size: 15px;
+        letter-spacing: -0.5px;
+    }
+    
+    .ll-follow-updates-block-description p {
+        font-size: 15px;
+        line-height: 1.3;
+        letter-spacing: -0.5px;
+        padding-top: 19px;
+    }
+    .ll-follow-updates-block-date p {
+        font-size: 15px;
+        line-height: 1;
+        letter-spacing: -0.5px;
+        padding-top: 9px;
+    }
+    
+    .ll-updates-dot {
+        width: 10px;
+        height: 10px;
+    }
+    .ll-updates-dots {
+        margin-top: 12px;
+    }
+    }
+    
+    {% endstyle %}
+    
+    <div class="ll-follow-updates-main-container gradient">
+        <div class="ll-follow-updates-main-wrapper page-width">
+            <div class="ll-follow-updates-heading">
+                <h2>{{ section.settings.heading }}</h2>
+            </div>
+    
+            <div class="ll-updates-slider-viewport" id="ll-slider-viewport-{{ section.id }}">
+                <div class="ll-updates-slider-track" id="ll-slider-track-{{ section.id }}">
+                    {% for block in section.blocks %}
+                        <div class="ll-updates-slide" {{ block.shopify_attributes }}>
+                            <div class="ll-follow-updates-blocks-wrapper">
+                                <div class="ll-follow-updates-block-heading">
+                                    <p>{{ block.settings.update_heading }}</p>
+                                </div>
+                                <div class="ll-follow-updates-block-description">
+                                    <p>{{ block.settings.update_description }}</p>
+                                </div>
+                                <div class="ll-follow-updates-block-date">
+                                    <p>{{ block.settings.update_date }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+    
+            <div class="ll-updates-dots" id="ll-slider-dots-{{ section.id }}"></div>
+        </div>
+    </div>
+    
+    <script>
+    (function () {
+        var DOT_SVG = '<svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8.16832" cy="8.16832" r="8.16832" fill="#D9D9D9"/></svg>';
+        var sectionId = '{{ section.id }}';
+        var totalBlocks = {{ section.blocks.size }};
+    
+        function isMobile() {
+            return window.innerWidth <= 749;
+        }
+    
+        function initSlider() {
+            var viewport = document.getElementById('ll-slider-viewport-' + sectionId);
+            var track = document.getElementById('ll-slider-track-' + sectionId);
+            var dotsContainer = document.getElementById('ll-slider-dots-' + sectionId);
+    
+            if (!viewport || !track || !dotsContainer) return;
+    
+            var perPage = isMobile() ? 1 : 2;
+            var gap = isMobile() ? 16 : 40;
+            var currentIndex = 0;
+    
+            // Total pages for infinite loop = original slides count
+            // We clone slides for infinite loop
+            var originalSlides = Array.from(track.children);
+            var count = originalSlides.length;
+            if (count === 0) return;
+    
+            // Clone all slides and append before + after for infinite loop
+            originalSlides.forEach(function (slide) {
+                var clone = slide.cloneNode(true);
+                clone.setAttribute('aria-hidden', 'true');
+                track.appendChild(clone);
+            });
+            originalSlides.forEach(function (slide) {
+                var clone = slide.cloneNode(true);
+                clone.setAttribute('aria-hidden', 'true');
+                track.insertBefore(clone, track.firstChild);
+            });
+    
+            // Total slides now = count * 3
+            var allSlides = Array.from(track.children);
+            var totalSlides = allSlides.length; // count * 3
+    
+            // Start at count (the original set)
+            var realIndex = count; // points to first real slide
+    
+            function getSlideWidth() {
+                return viewport.offsetWidth;
+            }
+    
+            function getTranslate(index) {
+                var slideWidth = getSlideWidth();
+                var perP = isMobile() ? 1 : 2;
+                var g = isMobile() ? 16 : 40;
+                var itemWidth = (slideWidth - g * (perP - 1)) / perP;
+                return index * (itemWidth + g);
+            }
+    
+            function goTo(index, animate) {
+                realIndex = index;
+                var x = getTranslate(realIndex);
+                if (animate === false) {
+                    track.style.transition = 'none';
+                } else {
+                    track.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+                }
+                track.style.transform = 'translateX(-' + x + 'px)';
+                // Update dots (dot index = (realIndex - count) % count)
+                var dotIndex = ((realIndex - count) % count + count) % count;
+                updateDots(dotIndex);
+            }
+    
+            function updateDots(active) {
+                var dots = dotsContainer.querySelectorAll('.ll-updates-dot');
+                dots.forEach(function (dot, i) {
+                    dot.classList.toggle('is-active', i === active);
+                });
+            }
+    
+            // Build dots
+            dotsContainer.innerHTML = '';
+            for (var d = 0; d < count; d++) {
+                (function (idx) {
+                    var btn = document.createElement('button');
+                    btn.className = 'll-updates-dot' + (idx === 0 ? ' is-active' : '');
+                    btn.setAttribute('aria-label', 'Go to slide ' + (idx + 1));
+                    btn.innerHTML = DOT_SVG;
+                    btn.addEventListener('click', function () {
+                        goTo(count + idx, true);
+                    });
+                    dotsContainer.appendChild(btn);
+                })(d);
+            }
+    
+            // Init position without animation
+            goTo(count, false);
+    
+            // After transition ends, silently jump if we're in cloned zone
+            track.addEventListener('transitionend', function () {
+                var perP = isMobile() ? 1 : 2;
+                if (realIndex >= count * 2) {
+                    // jumped past end clones → jump to real start
+                    goTo(realIndex - count, false);
+                } else if (realIndex < count) {
+                    // jumped before start clones → jump to real end
+                    goTo(realIndex + count, false);
+                }
+            });
+    
+            // Dot click navigation already handled above
+            // Expose next/prev for swipe
+            function next() {
+                goTo(realIndex + 1, true);
+            }
+            function prev() {
+                goTo(realIndex - 1, true);
+            }
+    
+            // Touch / swipe support
+            var touchStartX = 0;
+            var touchEndX = 0;
+            viewport.addEventListener('touchstart', function (e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+            viewport.addEventListener('touchend', function (e) {
+                touchEndX = e.changedTouches[0].screenX;
+                var diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 40) {
+                    diff > 0 ? next() : prev();
+                }
+            }, { passive: true });
+    
+            // Recalculate on resize
+            var resizeTimer;
+            window.addEventListener('resize', function () {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function () {
+                    goTo(realIndex, false);
+                }, 100);
+            });
+        }
+    
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initSlider);
+        } else {
+            initSlider();
+        }
+    })();
+    </script>
+    
+    
+    {% schema %}
+    {
+        "name": "LL Follow Updates",
+        "settings": [
+            {
+                "type": "inline_richtext",
+                "id": "heading",
+                "label": "Heading"
+            },
+            {
+                "type": "header",
+                "content": "Spacing Settings"
+            },
+            {
+                "type": "range",
+                "id": "padding-top-desktop",
+                "label": "Padding Top Desktop",
+                "min": 0,
+                "max": 100,
+                "step": 1,
+                "unit": "px",
+                "default": 0
+            },
+            {
+                "type": "range",
+                "id": "padding-bottom-desktop",
+                "label": "Padding Bottom Desktop",
+                "min": 0,
+                "max": 100,
+                "step": 1,
+                "unit": "px",
+                "default": 0
+            },
+            {
+                "type": "range",
+                "id": "padding-top-mobile",
+                "label": "Padding Top Mobile",
+                "min": 0,
+                "max": 80,
+                "step": 1,
+                "unit": "px",
+                "default": 0
+            },
+            {
+                "type": "range",
+                "id": "padding-bottom-mobile",
+                "label": "Padding Bottom Mobile",
+                "min": 0,
+                "max": 80,
+                "step": 1,
+                "unit": "px",
+                "default": 0
+            }
+        ],
+        "blocks": [
+            {
+                "type": "block",
+                "name": "Update",
+                "settings": [
+                    {
+                        "type": "text",
+                        "id": "update_heading",
+                        "label": "Update Heading"
+                    },
+                    {
+                        "type": "text",
+                        "id": "update_description",
+                        "label": "Update Description"
+                    },
+                    {
+                        "type": "text",
+                        "id": "update_date",
+                        "label": "Update Date"
+                    }
+                ]
+            }
+        ],
+        "presets": [
+            {
+                "name": "LL Follow Updates"
+            }
+        ]
+    }
+    {% endschema %}

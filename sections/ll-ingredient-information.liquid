@@ -1,0 +1,701 @@
+{% style %}
+
+    .ll-ingredient-information-section {
+      padding-top: {{ section.settings.padding_top_desktop }}px;
+      padding-bottom: {{ section.settings.padding_bottom_desktop }}px;
+      background:#fff;
+    }
+    
+    .ll-ingredient-information-inner {
+      display: flex;
+      gap: 70px;
+      align-items: flex-start;
+    }
+    
+    /* ── LEFT COLUMN ── */
+    .ll-ingredient-information-left {
+      flex: 0 0 55%;
+      max-width: 55%;
+    }
+    
+    /* Heading */
+.ll-ingredient-information-heading {
+    font-size: 46px;
+    font-weight: 500;
+    margin: 0 0 15px 0;
+    line-height: 1.2;
+    letter-spacing: -1.68px;
+}
+
+    .ll-ingredient-information-heading-description {
+font-style: normal;
+font-weight: 400;
+font-size: 18px;
+line-height: 30px;
+
+color: #000000;
+    }
+
+    .ll-ingredient-information-heading-description p {
+        margin: 0 0 0.75em;
+    }
+
+    .ll-ingredient-information-heading-description p:last-child {
+        margin-bottom: 0;
+    }
+    
+    /* Serving info */
+    .ll-ingredient-information-serving-size, .ll-ingredient-information-servings-per {
+        font-size: 20px;
+        margin: 0;
+        line-height: 1.6;
+        opacity: 0.8;
+        font-weight: 400;
+    }
+    
+    /* Nutrition table */
+    .ll-ingredient-information-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 40px;
+    }
+    
+.ll-ingredient-information-table th, .ll-ingredient-information-table td {
+    text-align: left;
+    padding: 16px 0;
+    font-size: 15px;
+    border-bottom: 1px solid #B2B3B2;
+    line-height: 1.6;
+}
+    
+    .ll-ingredient-information-table thead th {
+        font-weight: 600;
+        font-size: 21px;
+        border-bottom: 1px solid rgba(255,255,255);
+        line-height: 33px;
+    }
+    
+.ll-ingredient-information-table td:last-child, .ll-ingredient-information-table th:last-child {
+    text-align: right;
+}
+    
+    /* Other ingredients block */
+    .ll-ingredient-information-other-label {
+        font-size: 20px;
+        margin: 32px 0 32px 0;
+        opacity: 0.8;
+        line-height: 1.4;
+    }
+    
+    .ll-ingredient-information-other-text {
+      font-size: 20px;
+        margin: 32px 0 32px 0;
+        opacity: 0.8;
+        line-height: 1.4;
+    }
+    
+    /* Product title */
+    .ll-ingredient-information-product-title {
+        font-size: 36px;
+        font-weight: 500;
+        margin: 0 0 32px 0;
+        line-height: 1.2;
+        letter-spacing: -0.790909px;
+    }
+    
+    /* ── ACCORDION ── */
+    .ll-ingredient-information-accordion-item:not(:first-child) {
+        border-top: 1px solid rgba(255,255,255);
+    }
+    
+    .ll-ingredient-information-accordion-item:last-child {
+      border-bottom: 1px solid rgba(255,255,255);
+    }
+    
+    .ll-ingredient-information-accordion-trigger {
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s ease;
+    }
+    
+    .ll-ingredient-information-accordion-item:has(.ll-ingredient-information-accordion-body.is-open) .ll-ingredient-information-accordion-trigger {
+        border-bottom: 1px solid rgba(255,255,255);
+    }
+    
+    .ll-ingredient-information-accordion-trigger {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 32px 0;
+      text-align: left;
+    }
+    
+    .ll-ingredient-information-accordion-trigger-label {
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.5;
+    }
+    
+    .ll-ingredient-information-accordion-icon {
+      font-size: 32px;
+      font-weight: 300;
+      line-height: 1;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    
+    .ll-ingredient-information-accordion-body {
+      overflow: hidden;
+      height: 0px;
+      transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .ll-ingredient-information-accordion-body.is-open {
+      height: auto;
+    }
+    
+    .ll-ingredient-information-accordion-body-inner {
+      padding-bottom: 20px;
+    }
+    
+    .ll-ingredient-information-accordion-body-inner p, .ll-ingredient-information-accordion-body-inner {
+        font-size: 20px;
+        line-height: 1.6;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.7) !important;
+        opacity: 0.8;
+        padding: 16px 0;
+    }
+    
+    /* ── RIGHT COLUMN ── */
+    .ll-ingredient-information-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: sticky;
+      top: 80px;
+    }
+    
+    .ll-ingredient-information-image-wrapper img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .ll-ingredient-information-disclaimer {
+        font-size: 15px;
+        line-height: 1.3;
+        margin: 0;
+        letter-spacing: -0.5px;
+        text-align: center;
+        max-width: 378px;
+    }
+    
+    /* ── RESPONSIVE ── */
+    @media screen and (max-width: 900px) {
+ 
+    }
+    
+    @media screen and (max-width: 749px) {
+           .ll-ingredient-information-inner {
+        flex-direction: column;
+        gap: 32px;
+      }
+    
+      .ll-ingredient-information-left {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+    
+      .ll-ingredient-information-right {
+        width: 100%;
+        position: static;
+        align-items: center;
+      }
+    .ll-ingredient-information-image-wrapper {
+    width: 100%;
+}
+      .ll-ingredient-information-disclaimer {
+        text-align: center;
+      }
+      .ll-ingredient-information-section {
+        padding-top: {{ section.settings.padding_top_mobile }}px;
+        padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+ 
+      }
+    
+.ll-ingredient-information-heading {
+    font-size: 28px;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+    margin: 0 0 15px 0;
+}
+
+.ll-ingredient-information-heading-description {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0 0 20px 0;
+}
+    
+      .ll-ingredient-information-product-title {
+        font-size: 24px;
+        line-height: 1.1;
+        letter-spacing: -0.5px;
+      }
+    
+      .ll-ingredient-information-serving-size, .ll-ingredient-information-servings-per {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+    
+      .ll-ingredient-information-table {
+        margin-top: 7px;
+      }
+    
+      .ll-ingredient-information-table thead th {
+        font-size: 14px;
+        line-height: 21px;
+      }
+    
+      .ll-ingredient-information-table th, .ll-ingredient-information-table td {
+        padding: 15px;
+        font-size: 15px;
+       }
+    
+      .ll-ingredient-information-other-label {
+        font-size: 14px;
+        line-height: 1.3;
+        letter-spacing: -0.5px;
+        margin: 10px 0 20px 0;
+      }
+    
+      .ll-ingredient-information-other-text {
+        font-size: 14px;
+        line-height: 1.3;
+        letter-spacing: -0.5px;
+        margin: 20px 0 38px 0;
+      }
+    
+      .ll-ingredient-information-accordion-trigger-label {
+        font-size: 16px;
+        line-height: 1.4;
+      }
+    
+      .ll-ingredient-information-accordion-trigger {
+        padding: 20px 0;
+      }
+    
+      .ll-ingredient-information-accordion-body-inner p, .ll-ingredient-information-accordion-body-inner {
+        padding: 10px 0;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+
+  .ll-ingredient-information-right {
+    {% unless section.settings.show_right_section %}
+      display: none;
+    {% endunless %}
+
+}
+    }
+</style>
+    
+    
+    {% endstyle %}
+    
+    <div class="ll-ingredient-information-section gradient">
+      <div class="page-width">
+        <div class="ll-ingredient-information-inner">
+    
+          {%- comment -%} ── LEFT COLUMN ── {%- endcomment -%}
+          <div class="ll-ingredient-information-left">
+    
+            {%- if section.settings.heading != blank -%}
+              <h2 class="ll-ingredient-information-heading">{{ section.settings.heading }}</h2>
+            {%- endif -%}
+
+            {%- if section.settings.heading_description != blank -%}
+              <div class="ll-ingredient-information-heading-description rte">
+                {{ section.settings.heading_description }}
+              </div>
+            {%- endif -%}
+    
+            {%- if section.settings.serving_size != blank -%}
+              <p class="ll-ingredient-information-serving-size">
+                {%- if section.settings.serving_size_label != blank -%}{{ section.settings.serving_size_label }}{%- endif -%}
+                {{ section.settings.serving_size }}
+              </p>
+            {%- endif -%}
+    
+            {%- if section.settings.servings_per_container != blank -%}
+              <p class="ll-ingredient-information-servings-per">
+                {%- if section.settings.servings_per_label != blank -%}{{ section.settings.servings_per_label }}{%- endif -%}
+                {{ section.settings.servings_per_container }}
+              </p>
+            {%- endif -%}
+    
+            {%- comment -%} Nutrition table {%- endcomment -%}
+            {%- assign table_rows = section.blocks | where: 'type', 'nutrition_row' -%}
+            {%- if table_rows.size > 0 -%}
+              <table class="ll-ingredient-information-table">
+                {%- if section.settings.table_col1_label != blank or section.settings.table_col2_label != blank -%}
+                  <thead>
+                    <tr>
+                      <th>{{ section.settings.table_col1_label }}</th>
+                      <th>{{ section.settings.table_col2_label }}</th>
+                    </tr>
+                  </thead>
+                {%- endif -%}
+                <tbody>
+                  {%- for block in table_rows -%}
+                    {%- if block.settings.ingredient_name != blank or block.settings.ingredient_amount != blank -%}
+                      <tr {{ block.shopify_attributes }}>
+                        <td>{{ block.settings.ingredient_name }}</td>
+                        <td>{{ block.settings.ingredient_amount }}</td>
+                      </tr>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </tbody>
+              </table>
+            {%- endif -%}
+    
+            {%- if section.settings.other_ingredients != blank -%}
+              {%- if section.settings.other_ingredients_label != blank -%}
+                <p class="ll-ingredient-information-other-label">{{ section.settings.other_ingredients_label }}</p>
+              {%- endif -%}
+              <p class="ll-ingredient-information-other-text">{{ section.settings.other_ingredients }}</p>
+            {%- endif -%}
+    
+            {%- if section.settings.product_title != blank -%}
+              <h3 class="ll-ingredient-information-product-title">{{ section.settings.product_title }}</h3>
+            {%- endif -%}
+    
+            {%- comment -%} Accordion blocks {%- endcomment -%}
+            {%- assign accordion_blocks = section.blocks | where: 'type', 'accordion' -%}
+            {%- if accordion_blocks.size > 0 -%}
+              <div class="ll-ingredient-information-accordion">
+                {%- for block in accordion_blocks -%}
+                  {%- if block.settings.accordion_title != blank -%}
+                    <div class="ll-ingredient-information-accordion-item" {{ block.shopify_attributes }}>
+                      <button
+                        class="ll-ingredient-information-accordion-trigger"
+                        aria-expanded="{{ block.settings.open_by_default }}"
+                        data-ll-accordion-trigger
+                      >
+                        <span class="ll-ingredient-information-accordion-trigger-label">{{ block.settings.accordion_title }}</span>
+                        <span class="ll-ingredient-information-accordion-icon">
+                          {%- if block.settings.open_by_default -%}&minus;{%- else -%}&plus;{%- endif -%}
+                        </span>
+                      </button>
+                      <div
+                        class="ll-ingredient-information-accordion-body{% if block.settings.open_by_default %} is-open{% endif %}"
+                        data-ll-accordion-body
+                      >
+                        {%- if block.settings.accordion_content != blank -%}
+                          <div class="ll-ingredient-information-accordion-body-inner">
+                            {{ block.settings.accordion_content }}
+                          </div>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+    
+          </div>
+    
+          {%- comment -%} ── RIGHT COLUMN ── {%- endcomment -%}
+          <div class="ll-ingredient-information-right">
+    
+            {%- if section.settings.product_image != blank -%}
+              <div class="ll-ingredient-information-image-wrapper">
+                {{ section.settings.product_image | image_url: width: 1500 | image_tag:
+                  loading: 'lazy',
+                  alt: section.settings.product_image.alt | escape
+                }}
+              </div>
+            {%- endif -%}
+    
+            {%- if section.settings.disclaimer != blank -%}
+              <p class="ll-ingredient-information-disclaimer">{{ section.settings.disclaimer }}</p>
+            {%- endif -%}
+    
+          </div>
+    
+        </div>
+      </div>
+    </div>
+    
+    <script>
+    (function () {
+      function initAccordions(container) {
+        var triggers = container.querySelectorAll('[data-ll-accordion-trigger]');
+        triggers.forEach(function (trigger) {
+          var body = trigger.nextElementSibling;
+    
+          // Set initial height for already-open accordions
+          if (body.classList.contains('is-open')) {
+            body.style.height = 'auto';
+          }
+    
+          // Cleanup height to 'auto' after open transition ends
+          body.addEventListener('transitionend', function () {
+            if (body.classList.contains('is-open')) {
+              body.style.height = 'auto';
+            }
+          });
+    
+          trigger.addEventListener('click', function () {
+            var icon = trigger.querySelector('.ll-ingredient-information-accordion-icon');
+            var isOpen = body.classList.contains('is-open');
+    
+            if (isOpen) {
+              body.style.height = body.scrollHeight + 'px';
+              body.classList.remove('is-open');
+              requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                  body.style.height = '0px';
+                });
+              });
+              trigger.setAttribute('aria-expanded', 'false');
+              if (icon) icon.innerHTML = '&plus;';
+            } else {
+              body.classList.add('is-open');
+              body.style.height = body.scrollHeight + 'px';
+              trigger.setAttribute('aria-expanded', 'true');
+              if (icon) icon.innerHTML = '&minus;';
+            }
+          });
+        });
+      }
+    
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          document.querySelectorAll('.ll-ingredient-information-section').forEach(initAccordions);
+        });
+      } else {
+        document.querySelectorAll('.ll-ingredient-information-section').forEach(initAccordions);
+      }
+    })();
+    </script>
+    
+    
+    {% schema %}
+    {
+      "name": "LL Ingredient Information",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Ingredient Information"
+        },
+        {
+          "type": "richtext",
+          "id": "heading_description",
+          "label": "Heading description",
+          "info": "Optional rich text shown directly below the heading."
+        },
+        {
+          "type": "text",
+          "id": "serving_size_label",
+          "label": "Serving Size Label",
+          "default": "Serving Size: "
+        },
+        {
+          "type": "text",
+          "id": "serving_size",
+          "label": "Serving Size Value",
+          "default": "1 Stick"
+        },
+        {
+          "type": "text",
+          "id": "servings_per_label",
+          "label": "Servings Per Container Label",
+          "default": "Servings Per Container: "
+        },
+        {
+          "type": "text",
+          "id": "servings_per_container",
+          "label": "Servings Per Container Value",
+          "default": "15"
+        },
+        {
+          "type": "text",
+          "id": "table_col1_label",
+          "label": "Table Column 1 Header",
+          "default": "Name"
+        },
+        {
+          "type": "text",
+          "id": "table_col2_label",
+          "label": "Table Column 2 Header",
+          "default": "Amount"
+        },
+        {
+          "type": "text",
+          "id": "other_ingredients_label",
+          "label": "Other Ingredients Label",
+          "default": "Other Ingredients:"
+        },
+        {
+          "type": "textarea",
+          "id": "other_ingredients",
+          "label": "Other Ingredients Text"
+        },
+        {
+          "type": "text",
+          "id": "product_title",
+          "label": "Product Title"
+        },
+        {
+          "type": "image_picker",
+          "id": "product_image",
+          "label": "Product Image"
+        },
+        {
+          "type": "textarea",
+          "id": "disclaimer",
+          "label": "Disclaimer Text"
+        },
+        {
+  "type": "checkbox",
+  "id": "show_right_section",
+  "label": "Show Image on Mobile",
+  "default": false
+},
+        {
+          "type": "header",
+          "content": "Spacing"
+        },
+        {
+          "type": "range",
+          "id": "padding_top_desktop",
+          "label": "Padding Top (Desktop)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom_desktop",
+          "label": "Padding Bottom (Desktop)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "padding_top_mobile",
+          "label": "Padding Top (Mobile)",
+          "min": 0,
+          "max": 80,
+          "step": 1,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom_mobile",
+          "label": "Padding Bottom (Mobile)",
+          "min": 0,
+          "max": 80,
+          "step": 1,
+          "unit": "px",
+          "default": 0
+        }
+      ],
+      "blocks": [
+        {
+          "type": "nutrition_row",
+          "name": "Nutrition Row",
+          "settings": [
+            {
+              "type": "text",
+              "id": "ingredient_name",
+              "label": "Ingredient Name"
+            },
+            {
+              "type": "text",
+              "id": "ingredient_amount",
+              "label": "Amount"
+            }
+          ]
+        },
+        {
+          "type": "accordion",
+          "name": "Accordion",
+          "settings": [
+            {
+              "type": "text",
+              "id": "accordion_title",
+              "label": "Title"
+            },
+            {
+              "type": "richtext",
+              "id": "accordion_content",
+              "label": "Content"
+            },
+            {
+              "type": "checkbox",
+              "id": "open_by_default",
+              "label": "Open by default",
+              "default": false
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "LL Ingredient Information",
+          "blocks": [
+            {
+              "type": "nutrition_row",
+              "settings": {
+                "ingredient_name": "Creatine Monohydrate",
+                "ingredient_amount": "5g"
+              }
+            },
+            {
+              "type": "accordion",
+              "settings": {
+                "accordion_title": "Details",
+                "open_by_default": true
+              }
+            },
+            {
+              "type": "accordion",
+              "settings": {
+                "accordion_title": "Ingredients",
+                "open_by_default": false
+              }
+            },
+            {
+              "type": "accordion",
+              "settings": {
+                "accordion_title": "The \"NO\" List",
+                "open_by_default": false
+              }
+            },
+            {
+              "type": "accordion",
+              "settings": {
+                "accordion_title": "Certifications and Testing",
+                "open_by_default": false
+              }
+            }
+          ]
+        }
+      ]
+    }
+    {% endschema %}

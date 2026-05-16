@@ -1,0 +1,391 @@
+{%- liquid
+  assign heading = section.settings.heading
+-%}
+
+<style>
+  #ll-follow-updates-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    {% if section.settings.background_color != blank %}
+      background-color: {{ section.settings.background_color }};
+    {% else %}
+      background-color: #F4F9FC;
+    {% endif %}
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-heading {
+    margin: 0;
+    text-align: center;
+    font-size: 46px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: #000000 !important;
+    letter-spacing: -0.816832px;
+        padding-bottom: 48px;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 1rem;
+    align-items: start;
+    margin: 0;
+    padding: 0 0 16px;
+    overflow: visible;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-left {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0;
+    flex-shrink: 0;
+    max-width: 100%;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-item:last-child {
+    padding-bottom: 0;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-date {
+    margin: 0;
+    padding-right: 10px;
+    font-size: 16px;
+    line-height: 130%;
+    color: #000000 !important;
+    text-align: left;
+    letter-spacing: -0.816832px;
+    flex-shrink: 0;
+    width: max-content;
+    max-width: 100%;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-date-primary,
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-date-year {
+    display: block;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-track {
+    position: relative;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    width: 11px;
+    min-width: 11px;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 0;
+    margin-left: 0;
+    overflow: visible;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-dot {
+    position: relative;
+    display: block;
+    flex-shrink: 0;
+    z-index: 1;
+    line-height: 0;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-dot-svg {
+    display: block;
+    width: 11px;
+    height: 11px;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-line {
+    position: absolute;
+    top: 5.5px;
+    left: 50%;
+    margin-left: -0.5px;
+    width: 1px;
+    bottom: -2rem;
+    pointer-events: none;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-line-svg {
+    display: block;
+    width: 1px;
+    height: 100%;
+    min-height: 1px;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-item:last-child .ll-follow-updates-line {
+    display: none;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-card {
+    background-color: #ffffff;
+    border-radius: 14.703px;
+    padding: 24px 24px 20px 24px;
+    margin-left: 0;
+    min-width: 0;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-card-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: #000000 !important;
+    letter-spacing: -0.816832px;
+    padding-bottom: 22px;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-card-body {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.67;
+    color: #000000 !important;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-card-body p {
+    margin: 0 0 0.75rem;
+  }
+
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-card-body p:last-child {
+    margin-bottom: 0;
+    color: #000000 !important;
+  }
+
+  @media screen and (max-width: 749px) {
+    #ll-follow-updates-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    }
+
+    #ll-follow-updates-{{ section.id }} .ll-follow-updates-item {
+      grid-template-columns: auto 1fr;
+      column-gap: 0.75rem;
+      padding-bottom: 1.5rem;
+    }
+
+    #ll-follow-updates-{{ section.id }} .ll-follow-updates-line {
+      bottom: -1.5rem;
+    }
+    #ll-follow-updates-{{ section.id }} .ll-follow-updates-heading {
+    font-size: 28px;
+    line-height: 2;
+        padding-bottom: 24px;
+  }
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-card-title {
+    font-size: 18px;
+    line-height: 1.4;
+    padding-bottom: 12px;
+  }
+  #ll-follow-updates-{{ section.id }} .ll-follow-updates-card-body {
+    font-size: 16px;
+    line-height: 2;
+  }
+  }
+</style>
+
+<div id="ll-follow-updates-{{ section.id }}" class="ll-follow-updates-section">
+  <div class="ll-follow-updates-inner page-width">
+    {% if heading != blank %}
+      <h2 class="ll-follow-updates-heading">{{ heading | escape }}</h2>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <ul class="ll-follow-updates-list" role="list">
+        {% for block in section.blocks %}
+          <li class="ll-follow-updates-item" {{ block.shopify_attributes }}>
+            <div class="ll-follow-updates-left">
+              {% if block.settings.date_month_day != blank or block.settings.date_year != blank %}
+                <p class="ll-follow-updates-date">
+                  {% if block.settings.date_month_day != blank %}
+                    <span class="ll-follow-updates-date-primary">{{ block.settings.date_month_day | escape }}</span>
+                  {% endif %}
+                  {% if block.settings.date_year != blank %}
+                    <span class="ll-follow-updates-date-year">{{ block.settings.date_year | escape }}</span>
+                  {% endif %}
+                </p>
+              {% endif %}
+              <div class="ll-follow-updates-track">
+              <span class="ll-follow-updates-line" aria-hidden="true">
+                <svg
+                  class="ll-follow-updates-line-svg"
+                  width="1"
+                  height="100%"
+                  viewBox="0 0 1 62"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  preserveAspectRatio="none"
+                  focusable="false"
+                >
+                  <line x1="0.5" y1="2.18557e-08" x2="0.499997" y2="62" stroke="black"/>
+                </svg>
+              </span>
+              <span class="ll-follow-updates-dot" aria-hidden="true">
+                <svg
+                  class="ll-follow-updates-dot-svg"
+                  width="11"
+                  height="11"
+                  viewBox="0 0 11 11"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  focusable="false"
+                >
+                  <circle cx="5.5" cy="5.5" r="5.5" fill="#141413"/>
+                </svg>
+              </span>
+              </div>
+            </div>
+            <article class="ll-follow-updates-card">
+              {% if block.settings.title != blank %}
+                <h3 class="ll-follow-updates-card-title">{{ block.settings.title | escape }}</h3>
+              {% endif %}
+              {% if block.settings.description != blank %}
+                <div class="ll-follow-updates-card-body rte">
+                  {{ block.settings.description }}
+                </div>
+              {% endif %}
+            </article>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Follow our updates",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Follow our updates"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#eef1f5"
+    },
+    {
+      "type": "header",
+      "content": "Spacing (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Spacing (mobile)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "update",
+      "name": "Update",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Date"
+        },
+        {
+          "type": "text",
+          "id": "date_month_day",
+          "label": "Month & day",
+          "default": "Mar 7",
+          "info": "Shown on the first line (e.g. Mar 7)."
+        },
+        {
+          "type": "text",
+          "id": "date_year",
+          "label": "Year",
+          "default": "2026",
+          "info": "Shown on the line below the month & day."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Revisions are on the way!"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Add details about this update for your customers.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Follow our updates",
+      "blocks": [
+        {
+          "type": "update",
+          "settings": {
+            "date_month_day": "Mar 7",
+            "date_year": "2026",
+            "title": "Revisions are on the way!",
+            "description": "<p>We're polishing a few things behind the scenes. Thanks for your patience.</p>"
+          }
+        },
+        {
+          "type": "update",
+          "settings": {
+            "date_month_day": "Feb 20",
+            "date_year": "2026",
+            "title": "New arrivals this week",
+            "description": "<p>Fresh styles are landing in the shop—check the collection for the latest drops.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

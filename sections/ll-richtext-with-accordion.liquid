@@ -1,0 +1,304 @@
+ 
+{%- style -%}
+  #shopify-section-{{ section.id }} .LL-Richtxt-wit-Accor-root {
+    background-color: {{ section.settings.section_bg_color }};
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+
+  .LL-Richtxt-wit-Accor-grid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:40px;
+}
+
+.LL-Richtxt-wit-Accor-main-heading.inline-richtext {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 35px;
+    line-height: 1.2;
+    letter-spacing: -1.05556px;
+    color: #000000;
+    margin: 0;
+    padding-bottom: 40px;
+}
+.LL-Richtxt-wit-Accor-body p {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 160%;
+    letter-spacing: -0.777771px;
+    color: #000000;
+}
+.LL-Richtxt-wit-Accor-col.LL-Richtxt-wit-Accor-col--accordion {
+    padding: 40px;
+    background: #FFFFFF;
+    border-radius: 8px;
+    width: 100%;
+}
+.LL-Richtxt-wit-Accor-accor-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #f7f7f7;
+    padding: 10px 0;
+}
+.LL-Richtxt-wit-Accor-accor-item span {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: -0.816832px;
+    color: #000000;
+}
+.LL-Richtxt-wit-Accor-accor-content.rte p {
+    font-style: normal;
+      padding: 10px 0;
+          border-bottom: 2px solid #f7f7f7;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 160%;
+    letter-spacing: -0.777771px;
+    color: #000000;
+}
+.LL-Richtxt-wit-Accor-grid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    flex-direction: column;
+}
+.LL-icon-minus { 
+  display: none;
+ }
+details[open] .LL-icon-plus { 
+  display: none; 
+}
+details[open] .LL-icon-minus { 
+  display: inline;
+ } 
+
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }} .LL-Richtxt-wit-Accor-root {
+      padding-top: {{ section.settings.padding_top_desktop }}px;
+      padding-bottom: {{ section.settings.padding_bottom_desktop }}px;
+    }
+    .LL-Richtxt-wit-Accor-grid { 
+    flex-direction: row;
+}
+.LL-Richtxt-wit-Accor-col {
+    width: 50% !important;
+}
+  }
+    @media screen and (max-width: 749px) {
+.LL-Richtxt-wit-Accor-main-heading.inline-richtext {
+    font-size: 28px;
+    padding-bottom: 15px;
+    text-align: left;
+}
+.LL-Richtxt-wit-Accor-body p { 
+    font-size: 16px; 
+}
+.LL-Richtxt-wit-Accor-grid { 
+    gap: 32px; 
+}
+.LL-Richtxt-wit-Accor-col.LL-Richtxt-wit-Accor-col--accordion {
+    padding: 38px 16px; 
+}
+.LL-Richtxt-wit-Accor-accor-content.rte p { 
+    font-size: 16px; 
+}
+    }
+{%- endstyle -%}
+
+<div class="LL-Richtxt-wit-Accor-root">
+  <div class="LL-Richtxt-wit-Accor-grid page-width">
+    <div class="LL-Richtxt-wit-Accor-col LL-Richtxt-wit-Accor-col--richtext">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="LL-Richtxt-wit-Accor-main-heading inline-richtext">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.body != blank -%}
+        <div class="LL-Richtxt-wit-Accor-body rte">{{ section.settings.body }}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="LL-Richtxt-wit-Accor-col LL-Richtxt-wit-Accor-col--accordion">
+      {%- if section.blocks.size > 0 -%}
+        <div class="LL-Richtxt-wit-Accor-card">
+          {%- for block in section.blocks -%}
+            <details
+              class="LL-Richtxt-wit-Accor-accor-item"
+              id="LL-Richtxt-wit-Accor-Details-{{ block.id }}"
+              {% if block.settings.open_by_default %}
+                open
+              {% endif %}
+              {{ block.shopify_attributes }}
+            >
+              <summary class="LL-Richtxt-wit-Accor-accor-summary">
+                <span class="LL-Richtxt-wit-Accor-accor-header">{{ block.settings.heading }}</span>
+                {% comment %} <span class="LL-Richtxt-wit-Accor-accor-icon"><svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="11" cy="13" r="11" fill="#F7F7F7"/>
+<path d="M10.3954 17.8139V8.82244H11.6099V17.8139H10.3954ZM6.50337 13.9219V12.7145H15.502V13.9219H6.50337Z" fill="black"/>
+</svg>
+</span> {% endcomment %}<span class="LL-Richtxt-wit-Accor-accor-icon">
+  <span class="LL-icon-plus">
+    <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="11" cy="13" r="11" fill="#F7F7F7"/>
+      <path d="M10.3954 17.8139V8.82244H11.6099V17.8139H10.3954ZM6.50337 13.9219V12.7145H15.502V13.9219H6.50337Z" fill="black"/>
+    </svg>
+  </span>
+  <span class="LL-icon-minus">
+    <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="11" cy="13" r="11" fill="#F7F7F7"/>
+      <path d="M14.0256 12.1676V13.3608H7.97443V12.1676H14.0256Z" fill="black"/>
+    </svg>
+  </span>
+</span>
+              </summary>
+              <div class="LL-Richtxt-wit-Accor-accor-content rte">{{ block.settings.content }}</div>
+            </details>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "LL Rich text + accordion",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section background color",
+      "default": "#F2F4F6"
+    },
+    {
+      "type": "header",
+      "content": "Padding — desktop"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Padding — mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Left column"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "No Scoop. No Shaker. Just Results."
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Text",
+      "default": "<p>Built for people who want creatine without the hassle.</p><p>Each stick delivers 5g of creatine monohydrate for strength and recovery, plus electrolytes to keep you hydrated.</p><p>No shaker. No scooping. No mess. Just tear it open, and pour into water, in the gym, car, work, or on the go.</p>"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "accordion_row",
+      "name": "Accordion row",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "label": "Title",
+          "default": "Product Description"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "default": "<p>Add your answer here.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "Open by default",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LL Rich text + accordion",
+      "blocks": [
+        {
+          "type": "accordion_row",
+          "settings": {
+            "heading": "Product Description",
+            "content": "<p>Add details about your product.</p>"
+          }
+        },
+        {
+          "type": "accordion_row",
+          "settings": {
+            "heading": "Product Description",
+            "content": "<p>Add details about your product.</p>"
+          }
+        },
+        {
+          "type": "accordion_row",
+          "settings": {
+            "heading": "Product Description",
+            "content": "<p>Add details about your product.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

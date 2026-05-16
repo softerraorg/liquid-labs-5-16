@@ -1,0 +1,609 @@
+{% style %}
+  .ll-founding-member-section {
+    background-color: {{ section.settings.bg_color }};
+    padding-top: {{ section.settings.padding_top_desktop }}px;
+    padding-bottom: {{ section.settings.padding_bottom_desktop }}px;
+    overflow: hidden;
+  }
+
+  .ll-fm-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ll-fm-title {
+  font-family: "Inter", sans-serif;
+   color: {{ section.settings.text_color }};
+font-style: normal;
+text-align:center;
+font-weight: 500;
+font-size: 46px; 
+line-height: 1; 
+letter-spacing: -0.5px; 
+margin:0;
+  } 
+
+  .ll-fm-layout {
+    position: relative;
+    max-width: 757px;
+    margin: 0 auto;
+    min-height: 500px;
+    margin-top:50px;
+  }
+
+  .ll-fm-product-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ll-fm-main-image {
+    width: 100%;
+    max-width: {{ section.settings.image_max_width_desktop }}px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .ll-fm-item {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    z-index: 2;
+    top: var(--pos-top-desk);
+    left: var(--pos-left-desk);
+    flex-direction: var(--flex-dir, row);
+  }
+
+  .ll-fm-item-left {
+    text-align: left;
+  }
+
+  .ll-fm-item-right {
+    text-align: left;
+  }
+
+  .ll-fm-text {
+    font-family: "Inter", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 28.4517px;
+    line-height: 39px;
+    display: flex;
+    align-items: center;
+    letter-spacing: -0.966401px; 
+    color: {{ section.settings.text_color }};
+    margin:0;
+  }
+
+  .ll-fm-text--wrap {
+    white-space: normal;
+    max-width: var(--text-max-w, 160px);
+  }
+
+  .ll-fm-line-wrap {
+    flex-shrink: 0;
+    width: var(--line-w-desk);
+    position: relative;
+  }
+
+  .ll-fm-line {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* Button */
+  .ll-fm-btn-wrapper {
+    margin-top: 40px;
+    text-align: center;
+    position: relative;
+    z-index: 3;
+  }
+
+.ll-fm-btn { 
+    padding: 21.8472px 22.8254px 22.1732px;
+    height: 79.02px;
+    background: linear-gradient(90deg, #0E2A5A 0%, #1F5FFF 100%);
+    border: 1.63039px solid #6CB2FF;
+    box-shadow: 0px 0px 24.4558px rgba(61, 139, 255, 0.7);
+    border-radius: 65.2154px;
+    font-family: "Inter", sans-serif;
+    display: inline-block;
+     color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 442px;
+    line-height: 1.3;
+     letter-spacing: normal;
+}
+
+  /* .ll-fm-btn:hover {
+    opacity: 0.9;
+    box-shadow: 0px 6px 25px rgba(66, 125, 255, 0.6);
+  } */
+
+  /* ── RESPONSIVE ── */
+  @media screen and (max-width: 749px) {
+    .ll-founding-member-section {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    }
+.ll-fm-btn { 
+    font-size: 18px;
+     text-align: center; 
+    padding: 13.4px 14px 13.6px;
+    height: 52px;
+    border-radius: 40px;
+    max-width: 268px;
+}
+.ll-fm-title {
+    font-size: 28px;
+    text-align:left;
+}
+.ll-fm-btn-wrapper {
+    margin-top: 15px; 
+}
+
+    .ll-fm-layout {
+      min-height: 350px;
+    }
+
+    .ll-fm-main-image {
+      max-width: {{ section.settings.image_max_width_mobile }}px;
+    }
+
+    .ll-fm-item {
+      top: var(--pos-top-mob);
+      left: var(--pos-left-mob);
+    }
+
+    .ll-fm-text {
+      font-size: 15px;
+      line-height:20px;
+    }
+
+    .ll-fm-text--wrap {
+      max-width: var(--text-max-w-mob, 100px);
+    }
+
+    .ll-fm-line-wrap {
+      width: var(--line-w-mob);
+    }
+
+    /* .ll-fm-btn-wrapper {
+      margin-top: 30px;
+    }
+
+    .ll-fm-btn {
+      font-size: 16px;
+      padding: 14px 40px;
+      width: 100%;
+      max-width: 300px;
+    } */
+  }
+{% endstyle %}
+
+<div class="ll-founding-member-section gradient">
+  <div class="ll-fm-container">
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="ll-fm-title">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.show_fm_layout -%}
+      <div class="ll-fm-layout">
+
+        {%- comment -%} ── PRODUCT IMAGE ── {%- endcomment -%}
+        <div class="ll-fm-product-wrap">
+          {%- if section.settings.main_image != blank -%}
+            {{ section.settings.main_image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'll-fm-main-image', alt: section.settings.main_image.alt | escape }}
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} ── FEATURE BLOCKS (absolutely positioned) ── {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          <div class="ll-fm-item ll-fm-item-{{ block.settings.position }}" {{ block.shopify_attributes }}
+               style="
+                 --flex-dir: {{ block.settings.flex_direction }};
+                 --pos-top-desk: {{ block.settings.pos_top_desktop }}%;
+                 --pos-left-desk: {{ block.settings.pos_left_desktop }}%;
+                 --pos-top-mob: {{ block.settings.pos_top_mobile }}%;
+                 --pos-left-mob: {{ block.settings.pos_left_mobile }}%;
+                 --line-w-desk: {{ block.settings.line_width_desktop }}px;
+                 --line-w-mob: {{ block.settings.line_width_mobile }}px;
+                 --text-max-w: {{ block.settings.text_max_width_desktop }}px;
+                 --text-max-w-mob: {{ block.settings.text_max_width_mobile }}px;
+               ">
+
+            {%- if block.settings.position == 'left' -%}
+              {%- if block.settings.text != blank -%}
+                <p class="ll-fm-text {% if block.settings.text_wrap %}ll-fm-text--wrap{% endif %}">{{ block.settings.text | newline_to_br }}</p>
+              {%- endif -%}
+              {%- if block.settings.line_image != blank -%}
+                <div class="ll-fm-line-wrap">
+                  {{ block.settings.line_image | image_url: width: 400 | image_tag: loading: 'lazy', class: 'll-fm-line', alt: block.settings.line_image.alt | escape }}
+                </div>
+              {%- endif -%}
+            {%- else -%}
+              {%- if block.settings.line_image != blank -%}
+                <div class="ll-fm-line-wrap">
+                  {{ block.settings.line_image | image_url: width: 400 | image_tag: loading: 'lazy', class: 'll-fm-line', alt: block.settings.line_image.alt | escape }}
+                </div>
+              {%- endif -%}
+              {%- if block.settings.text != blank -%}
+                <p class="ll-fm-text {% if block.settings.text_wrap %}ll-fm-text--wrap{% endif %}">{{ block.settings.text | newline_to_br }}</p>
+              {%- endif -%}
+            {%- endif -%}
+
+          </div>
+        {%- endfor -%}
+
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} ── BUTTON ── {%- endcomment -%}
+    {%- if section.settings.button_text != blank and section.settings.button_link != blank -%}
+      <div class="ll-fm-btn-wrapper">
+        <a href="{{ section.settings.button_link }}" class="ll-fm-btn scroll-to-main">
+          {{ section.settings.button_text }}
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.scroll-to-main').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector('.product-form__buttons');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  });
+});
+</script>
+{% schema %}
+{
+  "name": "LL Founding Member",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Become a founding member"
+    },
+    {
+      "type": "image_picker",
+      "id": "main_image",
+      "label": "Center Product Image"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_fm_layout",
+      "label": "Show product & feature layout",
+      "default": true,
+      "info": "Turn off to hide the center image and positioned feature blocks (.ll-fm-layout). Heading and button stay visible."
+    },
+    {
+      "type": "header",
+      "content": "Product Image Size"
+    },
+    {
+      "type": "range",
+      "id": "image_max_width_desktop",
+      "label": "Image Max Width (Desktop)",
+      "min": 150,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 350
+    },
+    {
+      "type": "range",
+      "id": "image_max_width_mobile",
+      "label": "Image Max Width (Mobile)",
+      "min": 100,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "default": 200
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Pre-Order Now!"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#111115"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top (Desktop)",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom (Desktop)",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature Point",
+      "settings": [
+        {
+          "type": "select",
+          "id": "position",
+          "label": "Side (text + line order)",
+          "options": [
+            { "value": "left", "label": "Left (text → line)" },
+            { "value": "right", "label": "Right (line → text)" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "select",
+          "id": "flex_direction",
+          "label": "Layout Direction",
+          "options": [
+            { "value": "row", "label": "Row (horizontal)" },
+            { "value": "row-reverse", "label": "Row Reverse" },
+            { "value": "column", "label": "Column (vertical)" },
+            { "value": "column-reverse", "label": "Column Reverse" }
+          ],
+          "default": "column"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Feature description"
+        },
+        {
+          "type": "checkbox",
+          "id": "text_wrap",
+          "label": "Allow text wrapping",
+          "default": false,
+          "info": "Enable for multi-line text like 'Risk free cancellation at any time'."
+        },
+        {
+          "type": "image_picker",
+          "id": "line_image",
+          "label": "Line/Angle Image",
+          "info": "Upload the transparent diagonal line exported from Figma."
+        },
+        {
+          "type": "header",
+          "content": "Position (Desktop) — % from top-left of layout"
+        },
+        {
+          "type": "range",
+          "id": "pos_top_desktop",
+          "label": "Top %",
+          "min": -20,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "default": 10
+        },
+        {
+          "type": "range",
+          "id": "pos_left_desktop",
+          "label": "Left %",
+          "min": -30,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "default": 0
+        },
+        {
+          "type": "header",
+          "content": "Position (Mobile) — % from top-left of layout"
+        },
+        {
+          "type": "range",
+          "id": "pos_top_mobile",
+          "label": "Top %",
+          "min": -20,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "default": 10
+        },
+        {
+          "type": "range",
+          "id": "pos_left_mobile",
+          "label": "Left %",
+          "min": -30,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "default": 0
+        },
+        {
+          "type": "header",
+          "content": "Line Width"
+        },
+        {
+          "type": "range",
+          "id": "line_width_desktop",
+          "label": "Line Width (Desktop)",
+          "min": 20,
+          "max": 350,
+          "step": 5,
+          "unit": "px",
+          "default": 120
+        },
+        {
+          "type": "range",
+          "id": "line_width_mobile",
+          "label": "Line Width (Mobile)",
+          "min": 10,
+          "max": 200,
+          "step": 2,
+          "unit": "px",
+          "default": 50
+        },
+        {
+          "type": "header",
+          "content": "Text Max Width (for wrapped text)"
+        },
+        {
+          "type": "range",
+          "id": "text_max_width_desktop",
+          "label": "Text Max Width (Desktop)",
+          "min": 80,
+          "max": 300,
+          "step": 5,
+          "unit": "px",
+          "default": 160
+        },
+        {
+          "type": "range",
+          "id": "text_max_width_mobile",
+          "label": "Text Max Width (Mobile)",
+          "min": 50,
+          "max": 200,
+          "step": 5,
+          "unit": "px",
+          "default": 100
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LL Founding Member",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "position": "left",
+            "flex_direction": "column",
+            "text": "20% off entire purchase",
+            "text_wrap": false,
+            "pos_top_desktop": 5,
+            "pos_left_desktop": 0,
+            "pos_top_mobile": 5,
+            "pos_left_mobile": -5,
+            "line_width_desktop": 140,
+            "line_width_mobile": 60
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "position": "left",
+            "flex_direction": "column-reverse",
+            "text": "Risk free\ncancellation at\nany time",
+            "text_wrap": true,
+            "pos_top_desktop": 65,
+            "pos_left_desktop": 0,
+            "pos_top_mobile": 65,
+            "pos_left_mobile": -5,
+            "line_width_desktop": 140,
+            "line_width_mobile": 60,
+            "text_max_width_desktop": 160,
+            "text_max_width_mobile": 100
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "position": "right",
+            "flex_direction": "column-reverse",
+            "text": "Priority shipping",
+            "text_wrap": false,
+            "pos_top_desktop": 5,
+            "pos_left_desktop": 60,
+            "pos_top_mobile": 5,
+            "pos_left_mobile": 55,
+            "line_width_desktop": 140,
+            "line_width_mobile": 60
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "position": "right",
+            "flex_direction": "column",
+            "text": "$5 off your second\npurchase",
+            "text_wrap": true,
+            "pos_top_desktop": 65,
+            "pos_left_desktop": 60,
+            "pos_top_mobile": 65,
+            "pos_left_mobile": 55,
+            "line_width_desktop": 140,
+            "line_width_mobile": 60,
+            "text_max_width_desktop": 160,
+            "text_max_width_mobile": 100
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
