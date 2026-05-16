@@ -149,7 +149,6 @@
         "enable_sticky_info": true,
         "hide_slider_buttons_mobile": true,
         "show_title_at_top": false,
-        "skip_cart": true,
         "lock_gallery_image": true,
         "media_size": "large",
         "gallery_layout": "thumbnail",

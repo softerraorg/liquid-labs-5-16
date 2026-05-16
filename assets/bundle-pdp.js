@@ -38,6 +38,7 @@
     const flavorOptionIndex = flavorContainer ? parseInt(flavorContainer.dataset.flavorOptionIndex, 10) : -1;
     const bundleOptionIndex = tilesContainer ? parseInt(tilesContainer.dataset.bundleOptionIndex, 10) : -1;
     const singleBundleValue = tilesContainer ? tilesContainer.dataset.singleBundleValue : '';
+    const hasFlavorUI = !!flavorContainer && bagRows.length > 0;
 
     function normalize(s) {
       return (s == null ? '' : String(s)).trim().toLowerCase();
@@ -66,6 +67,23 @@
         const flavorMatch = flavorOptionIndex < 0 ? true : normalize(opts[flavorOptionIndex]) === target;
         return flavorMatch && v.available;
       });
+    }
+
+    const productId = root.dataset.productId ? parseInt(root.dataset.productId, 10) : null;
+    const cartLimit = root.dataset.cartLimit ? parseInt(root.dataset.cartLimit, 10) : 0;
+    let cartLimitReached = false;
+
+    async function checkCartLimit() {
+      if (!productId || !cartLimit) return;
+      try {
+        const res = await fetch('/cart.js');
+        const cart = await res.json();
+        const qty = cart.items
+          .filter((item) => item.product_id === productId)
+          .reduce((sum, item) => sum + item.quantity, 0);
+        cartLimitReached = qty >= cartLimit;
+        updateSubmitState();
+      } catch (_) {}
     }
 
     let bagCount = 3;
@@ -180,7 +198,7 @@
       const base = getBaseTotal();
       const final = isSubscribe() ? Math.round(base * subscribeFactor) : base;
       const totalText = formatMoney(final);
-      const metaText = '(' + bagCount + ' bag' + (bagCount === 1 ? '' : 's') + ')';
+      const metaText = hasFlavorUI ? '(' + bagCount + ' bag' + (bagCount === 1 ? '' : 's') + ')' : '';
       totalEls.forEach((el) => { el.textContent = totalText; });
       totalMetaEls.forEach((el) => { el.textContent = metaText; });
       if (onetimePriceEl) onetimePriceEl.textContent = formatMoney(base);
@@ -191,6 +209,10 @@
 
     // Checks the bundle variant the current selection would add to cart.
     function validateSelection() {
+      if (!hasFlavorUI) {
+        const available = !variants.length || variants.some((v) => v.available);
+        return available ? { ok: true } : { ok: false, reason: 'soldout' };
+      }
       const flavors = getSelectedFlavors();
       if (flavors.length === 0) return { ok: false, reason: 'select' };
       const v = findBundleVariant();
@@ -202,6 +224,11 @@
     function updateSubmitState() {
       const liveBtns = root.querySelectorAll('.bundle-pdp__submit');
       if (!liveBtns.length) return;
+      if (cartLimitReached) {
+        liveBtns.forEach((btn) => { btn.disabled = true; btn.classList.add('is-sold-out'); });
+        submitLabelEls.forEach((el) => { el.textContent = 'Already in cart'; });
+        return;
+      }
       const result = validateSelection();
       const labelText = result.ok
         ? defaultSubmitLabel
@@ -309,6 +336,16 @@
 
     function collectItems() {
       const items = [];
+      if (!hasFlavorUI) {
+        const variantInput = form && form.querySelector('[name="id"]');
+        const variantId = variantInput ? parseInt(variantInput.value, 10) : null;
+        if (!variantId) return items;
+        const sellingPlanId = isSubscribe() && sellingPlanInput && sellingPlanInput.value ? sellingPlanInput.value : null;
+        const item = { id: variantId, quantity: 1 };
+        if (sellingPlanId) item.selling_plan = sellingPlanId;
+        items.push(item);
+        return items;
+      }
       const flavors = getSelectedFlavors();
       if (flavors.length === 0) return items;
 
@@ -339,7 +376,7 @@
       if (items.length === 0) {
         console.warn('[bundle-pdp] no items collected — check flavor pills + tile + variant lookup.');
         return;
-      }
+      }  
 
       const errorWrapper = root.querySelector('.product-form__error-message-wrapper');
       const errorMessage = root.querySelector('.product-form__error-message');
@@ -370,11 +407,20 @@
       });
 
       try {
+        const cartAction = root.dataset.cartAction || 'checkout';
+        const cartDrawer = cartAction === 'drawer' ? document.querySelector('cart-drawer') : null;
         const url = window.routes && window.routes.cart_add_url ? window.routes.cart_add_url : '/cart/add.js';
+
+        const payload = { items };
+        if (cartDrawer) {
+          payload.sections = cartDrawer.getSectionsToRender().map((s) => s.id);
+          payload.sections_url = window.location.pathname;
+        }
+
         const res = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/javascript' },
-          body: JSON.stringify({ items: items }),
+          body: JSON.stringify(payload),
         });
         const responseBody = await res.json().catch(() => ({}));
         console.log('[bundle-pdp] /cart/add.js response', res.status, responseBody);
@@ -382,8 +428,17 @@
           throw new Error(responseBody.description || responseBody.message || 'Could not add to cart');
         }
 
-        const skipCart = root.dataset.skipCart === 'true';
-        window.location.href = skipCart ? '/checkout' : (window.routes && window.routes.cart_url) || '/cart';
+        if (cartAction === 'drawer' && cartDrawer) {
+          cartDrawer.classList.remove('is-empty');
+          cartDrawer.renderContents(responseBody);
+        } else if (cartAction === 'drawer' && !cartDrawer) {
+          // Cart drawer not in DOM — theme cart type must be set to Drawer in Theme Settings
+          window.location.href = (window.routes && window.routes.cart_url) || '/cart';
+        } else if (cartAction === 'cart') {
+          window.location.href = (window.routes && window.routes.cart_url) || '/cart';
+        } else {
+          window.location.href = '/checkout';
+        }
 
       } catch (err) {
         showError(err.message || 'Could not add to cart');
@@ -414,6 +469,7 @@
     updateBagVisibility();
     updateOptionSelectionUI();
     updateTotals();
+    checkCartLimit();
 
     if (stickyCta && submitBtn && 'IntersectionObserver' in window) {
       const stickyObserver = new IntersectionObserver((entries) => {

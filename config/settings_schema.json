@@ -1462,5 +1462,27 @@
         "default": "scheme-1"
       }
     ]
+  },
+  {
+    "name": "Bundle PDP",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Cart drawer"
+      },
+      {
+        "type": "checkbox",
+        "id": "bundle_cart_drawer_enabled",
+        "label": "Enable cart drawer on bundle pages",
+        "default": false,
+        "info": "When on, add to cart opens the cart drawer on the templates listed below."
+      },
+      {
+        "type": "text",
+        "id": "bundle_cart_drawer_templates",
+        "label": "Templates (comma-separated)",
+        "info": "Enter product template suffixes, e.g. bundle-pdp, two-free-sticks. Leave blank to apply to all bundle pages."
+      }
+    ]
   }
 ]
