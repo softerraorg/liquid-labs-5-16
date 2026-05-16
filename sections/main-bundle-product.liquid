@@ -169,16 +169,19 @@
                     {%- assign tile_sub = section.settings.tile_1_sub -%}
                     {%- assign tile_bundle_value = section.settings.tile_1_bundle_value -%}
                     {%- assign tile_fallback_price = section.settings.tile_1_price -%}
+                    {%- assign tile_sticks = section.settings.tile_1_sticks -%}
                   {%- when 2 -%}
                     {%- assign tile_label = section.settings.tile_2_label -%}
                     {%- assign tile_sub = section.settings.tile_2_sub -%}
                     {%- assign tile_bundle_value = section.settings.tile_2_bundle_value -%}
                     {%- assign tile_fallback_price = section.settings.tile_2_price -%}
+                    {%- assign tile_sticks = section.settings.tile_2_sticks -%}
                   {%- when 3 -%}
                     {%- assign tile_label = section.settings.tile_3_label -%}
                     {%- assign tile_sub = section.settings.tile_3_sub -%}
                     {%- assign tile_bundle_value = section.settings.tile_3_bundle_value -%}
                     {%- assign tile_fallback_price = section.settings.tile_3_price -%}
+                    {%- assign tile_sticks = section.settings.tile_3_sticks -%}
                 {%- endcase -%}
                 {%- liquid
                   assign resolved_price = tile_fallback_price
@@ -229,8 +232,11 @@
                   <span class="bundle-pdp__tile-sub">{{ tile_sub }}</span>
                   <span class="bundle-pdp__tile-price">
                     {{ resolved_price | money }}
-                    {%- if savings_pct > 0 -%}
+                    {%- if section.settings.tile_badge_mode == 'savings' and savings_pct > 0 -%}
                       <span class="bundle-pdp__tile-save">SAVE {{ savings_pct }}%</span>
+                    {%- elsif section.settings.tile_badge_mode == 'per_stick' and tile_sticks > 0 -%}
+                      {%- assign cost_per_stick = resolved_price | divided_by: tile_sticks -%}
+                      <span class="bundle-pdp__tile-save bundle-pdp__tile-per-stick">{{ cost_per_stick | money }} {{ section.settings.per_stick_label }}</span>
                     {%- endif -%}
                   </span>
                 </button>
@@ -623,6 +629,19 @@
     { "type": "text", "id": "popular_label", "label": "Popular badge text", "default": "MOST POPULAR" },
     {
       "type": "select",
+      "id": "tile_badge_mode",
+      "label": "Tile badge",
+      "info": "What to show under each tile price.",
+      "options": [
+        { "value": "savings",   "label": "Savings %" },
+        { "value": "per_stick", "label": "Cost per stick" },
+        { "value": "none",      "label": "None" }
+      ],
+      "default": "savings"
+    },
+    { "type": "text", "id": "per_stick_label", "label": "Per-stick label", "default": "per stick" },
+    {
+      "type": "select",
       "id": "popular_tile",
       "label": "Which tile gets the badge",
       "options": [
@@ -647,14 +666,17 @@
     { "type": "text", "id": "tile_1_sub", "label": "Tile 1 subtitle", "default": "15 Sticks" },
     { "type": "text", "id": "tile_1_bundle_value", "label": "Tile 1 bundle value", "default": "Single" },
     { "type": "number", "id": "tile_1_price", "label": "Tile 1 fallback price (cents)", "default": 2400, "info": "Only used if no variant matches the bundle value above." },
+    { "type": "number", "id": "tile_1_sticks", "label": "Tile 1 total sticks", "default": 15, "info": "Used to calculate cost per stick." },
     { "type": "text", "id": "tile_2_label", "label": "Tile 2 label", "default": "2 Bags" },
     { "type": "text", "id": "tile_2_sub", "label": "Tile 2 subtitle", "default": "30 Sticks" },
     { "type": "text", "id": "tile_2_bundle_value", "label": "Tile 2 bundle value", "default": "Duo" },
     { "type": "number", "id": "tile_2_price", "label": "Tile 2 fallback price (cents)", "default": 4000 },
+    { "type": "number", "id": "tile_2_sticks", "label": "Tile 2 total sticks", "default": 30 },
     { "type": "text", "id": "tile_3_label", "label": "Tile 3 label", "default": "3 Bags" },
     { "type": "text", "id": "tile_3_sub", "label": "Tile 3 subtitle", "default": "45 Sticks" },
     { "type": "text", "id": "tile_3_bundle_value", "label": "Tile 3 bundle value", "default": "Trio" },
     { "type": "number", "id": "tile_3_price", "label": "Tile 3 fallback price (cents)", "default": 5600 },
+    { "type": "number", "id": "tile_3_sticks", "label": "Tile 3 total sticks", "default": 45 },
 
     { "type": "header", "content": "Flavor pickers" },
     { "type": "text", "id": "flavor_heading", "label": "Heading", "default": "Select Your Flavors" },
@@ -723,7 +745,7 @@
       ],
       "default": "thumbnail",
       "label": "t:sections.main-product.settings.gallery_layout.label"
-    },
+    },  
     {
       "type": "select",
       "id": "mobile_thumbnails",
