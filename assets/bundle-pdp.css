@@ -687,16 +687,6 @@ article.bundle-pdp__benefit .bundle-pdp__benefit-label {
     padding: 1rem 1.2rem calc(1rem + env(safe-area-inset-bottom));
     background: #fff;
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
-    transform: translateY(110%);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform 0.25s ease, opacity 0.25s ease;
-  }
-
-  .bundle-pdp__sticky-cta.is-visible {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
   }
 
   .bundle-pdp__sticky-cta .bundle-pdp__sticky-submit {

@@ -503,15 +503,8 @@
     checkCartLimit();
     watchDrawerForLimit(document.querySelector('cart-drawer'), productId, cartLimit);
 
-    if (stickyCta && submitBtn && 'IntersectionObserver' in window) {
-      const stickyObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          const scrolledPast = !entry.isIntersecting && entry.boundingClientRect.top < 0;
-          stickyCta.classList.toggle('is-visible', scrolledPast);
-          stickyCta.setAttribute('aria-hidden', scrolledPast ? 'false' : 'true');
-        });
-      }, { threshold: 0 });
-      stickyObserver.observe(submitBtn);
+    if (stickyCta) {
+      stickyCta.setAttribute('aria-hidden', 'false');
     }
 
     window.addEventListener('pageshow', () => {
