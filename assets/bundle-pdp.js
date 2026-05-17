@@ -484,7 +484,6 @@
     if (form) {
       form.addEventListener('submit', (event) => {
         event.preventDefault();
-        event.stopImmediatePropagation();
         addToCart();
       });
     }
@@ -493,7 +492,17 @@
       const btn = event.target.closest('.bundle-pdp__submit');
       if (!btn || !root.contains(btn)) return;
       event.preventDefault();
-      event.stopImmediatePropagation();
+
+      // Sticky button is outside the form and has no name="add", so third-party apps
+      // like Honeycomb that attach listeners to the real submit button never see the click.
+      // Proxy through the real button so those listeners fire, then that click re-enters
+      // this handler (isSticky will be false) and calls addToCart().
+      if (btn.hasAttribute('data-bundle-sticky-submit')) {
+        const realBtn = form && form.querySelector('button[name="add"]');
+        if (realBtn && !realBtn.disabled) realBtn.click();
+        return;
+      }
+
       addToCart();
     });
 
