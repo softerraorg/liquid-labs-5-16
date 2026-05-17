@@ -86,6 +86,34 @@
       } catch (_) {}
     }
 
+    function enforceDrawerCartLimit(drawer, pId, limit) {
+      if (!limit || limit <= 0 || !pId) return;
+      fetch('/cart.js')
+        .then((r) => r.json())
+        .then((cart) => {
+          cart.items.forEach((item, idx) => {
+            if (item.product_id !== pId) return;
+            if (item.quantity < limit) return;
+            const n = idx + 1;
+            const row = drawer.querySelector(`#CartDrawer-Item-${n}`) || drawer.querySelector(`#CartItem-${n}`);
+            if (!row) return;
+            const qtyControl = row.querySelector('quantity-input') || row.querySelector('.quantity');
+            if (qtyControl) qtyControl.style.display = 'none';
+          });
+        })
+        .catch(() => {});
+    }
+
+    function watchDrawerForLimit(drawer, pId, limit) {
+      if (!limit || limit <= 0 || !pId || !drawer) return;
+      let debounceTimer;
+      new MutationObserver(() => {
+        enforceDrawerCartLimit(drawer, pId, limit);
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => checkCartLimit(), 300);
+      }).observe(drawer, { childList: true, subtree: true });
+    }
+
     let bagCount = 3;
     let selectedTile = root.querySelector('.bundle-pdp__tile.is-selected');
     if (!selectedTile && tiles.length) {
@@ -342,13 +370,14 @@
         if (!variantId) return items;
         const sellingPlanId = isSubscribe() && sellingPlanInput && sellingPlanInput.value ? sellingPlanInput.value : null;
         const item = { id: variantId, quantity: 1 };
+        if (cartLimit > 0) item.properties = { _cart_limit: String(cartLimit) };
         if (sellingPlanId) item.selling_plan = sellingPlanId;
         items.push(item);
-        return items;
+        return items; 
       }
       const flavors = getSelectedFlavors();
       if (flavors.length === 0) return items;
-
+ 
       const v = findBundleVariant();
       if (!v) return items;
 
@@ -363,7 +392,7 @@
           properties['Bag ' + (i + 1)] = flavor;
         });
         item.properties = properties;
-      }
+      } 
 
       if (sellingPlanId) item.selling_plan = sellingPlanId;
       items.push(item);
@@ -431,6 +460,8 @@
         if (cartAction === 'drawer' && cartDrawer) {
           cartDrawer.classList.remove('is-empty');
           cartDrawer.renderContents(responseBody);
+          enforceDrawerCartLimit(cartDrawer, productId, cartLimit);
+          checkCartLimit();
         } else if (cartAction === 'drawer' && !cartDrawer) {
           // Cart drawer not in DOM — theme cart type must be set to Drawer in Theme Settings
           window.location.href = (window.routes && window.routes.cart_url) || '/cart';
@@ -470,6 +501,7 @@
     updateOptionSelectionUI();
     updateTotals();
     checkCartLimit();
+    watchDrawerForLimit(document.querySelector('cart-drawer'), productId, cartLimit);
 
     if (stickyCta && submitBtn && 'IntersectionObserver' in window) {
       const stickyObserver = new IntersectionObserver((entries) => {

@@ -2,7 +2,7 @@
 <!doctype html>
 {% comment %} hello world {% endcomment %}
 <html class="js template-{{ template.name }}" lang="{{ request.locale.iso_code }}">
-  <head>
+  <head> 
    {% if template.name == 'index' %}
   <script>window.location.replace('/products/creatine-electrolytes');</script>
 {% endif %}
@@ -575,6 +575,40 @@
 })();
 </script>
 
+
+  {%- if template.name == 'cart' -%}
+  <script>
+  (function () {
+    function enforceCartPageLimits() {
+      fetch('/cart.js')
+        .then(function (r) { return r.json(); })
+        .then(function (cart) {
+          cart.items.forEach(function (item, idx) {
+            var limit = item.properties && item.properties._cart_limit ? parseInt(item.properties._cart_limit, 10) : 0;
+            if (!limit || item.quantity < limit) return;
+            var n = idx + 1;
+            var row = document.querySelector('#CartItem-' + n);
+            if (!row) return;
+            var qtyControl = row.querySelector('quantity-input') || row.querySelector('.quantity');
+            if (qtyControl) qtyControl.style.display = 'none';
+          });
+        })
+        .catch(function () {});
+    }
+
+    enforceCartPageLimits();
+
+    var cartEl = document.querySelector('cart-items');
+    if (cartEl) {
+      var t;
+      new MutationObserver(function () {
+        clearTimeout(t);
+        t = setTimeout(enforceCartPageLimits, 300);
+      }).observe(cartEl, { childList: true, subtree: true });
+    }
+  })();
+  </script>
+  {%- endif -%}
 
   </body>
 </html>
