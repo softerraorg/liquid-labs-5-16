@@ -4,9 +4,9 @@
   data-section="{{ section.id }}"
   data-product-id="{{ product.id }}"
   data-cart-action="{% liquid
+    assign _tpl = template.suffix
     assign _use_drawer = false
     if settings.bundle_cart_drawer_enabled
-      assign _tpl = template.suffix
       assign _drawer_list = settings.bundle_cart_drawer_templates | remove: ' ' | split: ','
       if _drawer_list.size == 0 or _drawer_list[0] == blank
         assign _use_drawer = true
@@ -19,8 +19,26 @@
         endfor
       endif
     endif
+    assign _use_cart = false
+    unless _use_drawer
+      if settings.bundle_cart_redirect_enabled
+        assign _cart_list = settings.bundle_cart_redirect_templates | remove: ' ' | split: ','
+        if _cart_list.size == 0 or _cart_list[0] == blank
+          assign _use_cart = true
+        else
+          for _t in _cart_list
+            if _t == _tpl
+              assign _use_cart = true
+              break
+            endif
+          endfor
+        endif
+      endif
+    endunless
     if _use_drawer
       echo 'drawer'
+    elsif _use_cart
+      echo 'cart'
     else
       echo 'checkout'
     endif

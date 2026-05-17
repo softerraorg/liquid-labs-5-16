@@ -1482,23 +1482,6 @@
         "id": "bundle_cart_drawer_templates",
         "label": "Templates (comma-separated)",
         "info": "Enter product template suffixes, e.g. bundle-pdp, two-free-sticks. Leave blank to apply to all bundle pages."
-      },
-      {
-        "type": "header",
-        "content": "Cart page redirect"
-      },
-      {
-        "type": "checkbox",
-        "id": "bundle_cart_redirect_enabled",
-        "label": "Redirect to cart page on bundle pages",
-        "default": false,
-        "info": "When on, add to cart redirects to the /cart page on the templates listed below. Useful for upsell apps triggered on the cart page."
-      },
-      {
-        "type": "text",
-        "id": "bundle_cart_redirect_templates",
-        "label": "Templates (comma-separated)",
-        "info": "Enter product template suffixes, e.g. two-free-sticks. Leave blank to apply to all bundle pages."
       }
     ]
   }
